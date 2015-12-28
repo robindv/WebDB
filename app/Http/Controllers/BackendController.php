@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers;
 
-
 use App\Models\Server;
 use App\Models\ServerDomain;
+use Illuminate\Http\Request;
 
 class BackendController extends Controller
 {
-    function getApache()
+    function getApache(Request $request)
     {
+        if($request->get('key') != env('WEBDB_BACKEND_KEY'))
+            return;
+
         header("Content-Type: text/plain");
 
         foreach(ServerDomain::get() as $domain)
