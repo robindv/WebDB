@@ -48,6 +48,12 @@ class BackendController extends Controller
 
         foreach(Server::get() as $server)
         {
+            echo '<VirtualHost *:80>'."\n";
+            echo "    ServerName ".$server->hostname."-mail.".env('WEBDB_URL')."\n";
+            echo "    RewriteEngine On\n";
+            echo "    RewriteRule ^/?(.*) https://%{SERVER_NAME}/$1 [R,L]\n";
+            echo "</VirtualHost>\n\n";
+
             echo '<VirtualHost *:443>'."\n";
             echo "    ServerName ".$server->hostname."-mail.".env('WEBDB_URL')."\n";
             echo "    SSLEngine on\n";
