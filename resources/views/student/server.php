@@ -35,7 +35,7 @@ else
     if($su)
     {
         echo '<h2>Inloggegevens</h2>';
-        echo '<p>Met onderstaande gegevens kun je inloggen op SSH en MySQL. PhpMyAdmin is te bereiken via: '.link_to('https://'.$server->hostname.'.'.env('WEBDB_URL').'/phpmyadmin').'</p>';
+        echo '<p>Met onderstaande gegevens kun je inloggen op SSH, MySQL en MailCatcher.</p>';
 
         echo '<div class="container">';
         echo '<div class="row"><span class="col-sm-2" style="text-align:left;font-weight: bold;">Gebruikersnaam</span>';
@@ -44,6 +44,10 @@ else
         echo '<span class="col-sm-4">'.$su->password.'</span></div>';
         echo '<div class="row"><span class="col-sm-2" style="text-align:left;font-weight: bold;">SSH-commando</span>';
         echo '<span class="col-sm-4">ssh -p '.$server->ssh_port.' '.$su->username.'@'.$server->hostname.'.'.env('WEBDB_URL').'</span></div>';
+        echo '<div class="row"><span class="col-sm-2" style="text-align:left;font-weight: bold;">phpMyAdmin</span>';
+        echo '<span class="col-sm-4">'.link_to('https://'.$server->hostname.'.'.env('WEBDB_URL').'/phpmyadmin').'</span></div>';
+        echo '<div class="row"><span class="col-sm-2" style="text-align:left;font-weight: bold;">MailCatcher</span>';
+        echo '<span class="col-sm-4">'.link_to('https://'.$server->hostname.'-mail.'.env('WEBDB_URL')).'</span></div>';
         echo '</div>';
     }
 
