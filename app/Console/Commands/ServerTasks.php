@@ -187,10 +187,17 @@ class ServerTasks extends Command
         $commands[] = "mysql -u debian-sys-maint -p".env('WEBDB_IMAGE_MYSQL_PASS')." mysql -e \"SET PASSWORD FOR 'debian-sys-maint'@'localhost' = PASSWORD('".$task->server->mysql_debian_pass."');FLUSH PRIVILEGES\"";
         $commands[] = "sed -i 's/".env('WEBDB_IMAGE_MYSQL_PASS')."/".$task->server->mysql_debian_pass."/g' /etc/mysql/debian.cnf";
         $commands[] = "passwd --lock root";
-        $commands[] = "rm /root/.viminfo";
-        $commands[] = "rm /root/.bash_history";
         $commands[] = "rm /etc/ssh/ssh_host_*";
         $commands[] = "/usr/sbin/dpkg-reconfigure openssh-server";
+
+        /* Clear some log files */
+        $commands[] = "cat /dev/null > /var/log/auth.log";
+        $commands[] = "cat /dev/null > /var/log/syslog";
+        $commands[] = "cat /dev/null > /var/log/apache2/access.log";
+        $commands[] = "cat /dev/null > /var/log/apache2/error.log";
+
+        $commands[] = "rm -f /root/.viminfo";
+        $commands[] = "rm -f /root/.bash_history";
         $commands[] = "history -c && history -w && reboot";
 
         SSH::into($task->server->name)->run($commands);
