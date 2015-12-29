@@ -35,6 +35,7 @@ Route::group(['middleware' => ['web']], function () {
     Route::get('/login-failed','AuthController@getLoginFailed');
 
     Route::get('/apache','BackendController@getApache');
+    Route::get('/apache-mailcatcher','BackendController@getApacheMailcatcher');
 
     Route::group(['middleware'=>'staff'], function() {
 

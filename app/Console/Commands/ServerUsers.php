@@ -84,11 +84,14 @@ class ServerUsers extends Command
             $commands = [];
             $commands[] = "useradd -g users -G sudo -s /bin/bash -m -p`mkpasswd ".$task->password."` ".$task->username;
             $commands[] = "mysql -u debian-sys-maint -p".$task->server->mysql_debian_pass." mysql -e \"CREATE USER '".$task->username."'@'localhost' IDENTIFIED BY '".$task->password."'; GRANT ALL PRIVILEGES ON *.* TO '".$task->username."'@'localhost' WITH GRANT OPTION; FLUSH PRIVILEGES\"";
+            $commands[] = "htpasswd -b /etc/apache2/.mailcatcher-htpasswd ".$task->username." ".$task->password;
             $commands[] = "mkdir /home/".$task->username."/public_html";
             $commands[] = "chmod +x /home/".$task->username."/public_html";
             $commands[] = "echo 'Dit bestand staat in je <u>public_html</u> directory!' > /home/".$task->username."/public_html/test.html";
             $commands[] = "chown -R ".$task->username.":users /home/".$task->username."/public_html";
             $commands[] = "chmod g-w /home/".$task->username;
+            $commands[] = "rm -f /root/.viminfo";
+            $commands[] = "rm -f /root/.bash_history";
             $commands[] = "history -c && history -w";
 
             SSH::into($task->server->name)->run($commands);

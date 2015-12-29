@@ -37,19 +37,33 @@ class BackendController extends Controller
             }
             echo "</VirtualHost>\n\n";
         }
+    }
 
-        // Temporary
+    function getApacheMailcatcher(Request $request)
+    {
+        if($request->get('key') != env('WEBDB_BACKEND_KEY'))
+            return;
+
+        header("Content-Type: text/plain");
+
         foreach(Server::get() as $server)
         {
-            echo '<VirtualHost *:80>'."\n";
+            echo '<VirtualHost *:443>'."\n";
             echo "    ServerName ".$server->hostname."-mail.".env('WEBDB_URL')."\n";
-            echo "    ProxyPass /messages ws://".$server->ip_address.":1080/messages\n";
-            echo "    ProxyPassReverse /messages ws://".$server->ip_address.":1080/messages\n";
-            echo "    ProxyPass / http://".$server->ip_address.":1080/\n";
-            echo "    ProxyPassReverse / http://".$server->ip_address.":1080/\n";
+            echo "    SSLEngine on\n";
+            echo "    SSLCertificateFile ".env('WEBDB_MAILCATCHER_SSL_PATH')."cert.pem\n";
+            echo "    SSLCertificateKeyFile ".env('WEBDB_MAILCATCHER_SSL_PATH')."privkey.pem\n";
+            echo "    SSLCACertificateFile ".env('WEBDB_MAILCATCHER_SSL_PATH')."chain.pem\n";
+            echo "    SSLProxyEngine on\n";
+            echo "    SSLProxyVerify none\n";
+            echo "    SSLProxyCheckPeerCN off\n";
+            echo "    SSLProxyCheckPeerName off\n";
+            echo "    SSLProxyCheckPeerExpire off\n";
+            echo "    ProxyPass /messages-ws wss://".$server->ip_address.":81/messages-ws\n";
+            echo "    ProxyPassReverse /messages-ws wss://".$server->ip_address.":81/messages-ws\n";
+            echo "    ProxyPass / https://".$server->ip_address.":81/\n";
+            echo "    ProxyPassReverse / https://".$server->ip_address.":81/\n";
             echo "</VirtualHost>\n\n";
         }
-
-
     }
 }
