@@ -15,6 +15,7 @@ class StudentController extends Controller
     function getProject()
     {
         $data['projects'] = Project::where('advanced',0)->pluck('name','id');
+        $data['deadline'] = strtotime(env("WEBDB_PROJECT_DEADLINE"));
 
         return view('layout')->nest('page','student.project',$data);
     }
@@ -34,8 +35,8 @@ class StudentController extends Controller
 
         $project = $group->project;
 
-        /* Store the change, but only when not chosen or before 04-01-2016 18:00 */
-        if(!$project || !(time() > 1451926800 || $project->advanced))
+        /* Store the change, but only when not chosen or before deadline. */
+        if(!$project || !(time() > strtotime(env("WEBDB_PROJECT_DEADLINE")) || $project->advanced))
         {
             $group->project()->associate(Project::find($project_id));
             $group->save();
