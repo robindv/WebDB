@@ -23,7 +23,7 @@ class HomeController extends Controller
         $user_id = Auth::user()->id;
 
         $data['user'] = Auth::user();
-        $data['passwords'] = ServerUser::with('server')->orderBy('server_id')->where('user_id',$user_id)->get();
+        $data['passwords'] = ServerUser::with('server')->whereHas('server',function($q){ $q->where('configured',1);})->orderBy('server_id')->where('user_id',$user_id)->get();
 
         return view('layout')->nest('page','pages.profile',$data);
     }
