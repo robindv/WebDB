@@ -7,6 +7,10 @@ if(!$group || !$group->server)
 {
     echo '<p>Er is geen server gevonden.</p>';
 }
+elseif(! $group->server->configured)
+{
+    echo '<p>De server van jouw groep is nog niet geconfigureerd. Maak je geen zorgen, dat maken we op tijd in orde.</p>';
+}
 else
 {
     $server = $group->server;
