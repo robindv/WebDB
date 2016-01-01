@@ -181,7 +181,8 @@ class ServerTasks extends Command
         $commands = [];
         $commands[] = "echo ".$hostname." > /etc/hostname";
         $commands[] = "sed -i 's/webdb0/".$hostname."/g' /etc/hosts";
-        $commands[] = "sed -i 's/webdb0/".$hostname."/g' /etc/php/7.0/apache2/conf.d/mailcatcher.ini";
+        $commands[] = "sed -i 's/webdb0/".$hostname."/g' /etc/php/7.0/apache2/conf.d/40-webdb.ini";
+        $commands[] = "sed -i 's/webdb0/".$hostname."/g' /etc/php/7.0/cli/conf.d/40-webdb.ini";
         $commands[] = "sed -i 's/webdb0/".$hostname."/g' /var/www/phpmyadmin/config.inc.php";
         $commands[] = "sed -i 's/127.0.1.1/".$task->server->ip_address."/g' /etc/hosts";
         $commands[] = "mysql -u debian-sys-maint -p".env('WEBDB_IMAGE_MYSQL_PASS')." mysql -e \"SET PASSWORD FOR 'debian-sys-maint'@'localhost' = PASSWORD('".$task->server->mysql_debian_pass."');FLUSH PRIVILEGES\"";
