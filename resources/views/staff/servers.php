@@ -59,7 +59,10 @@ if($servers)
         else
             echo '<td>&nbsp;</td>';
 
-        echo '<td><a href="http://'.$server->hostname.'.'.env('WEBDB_URL').'" class="glyphicon glyphicon-globe"></a></td>';
+        if($server->state == 'Running')
+            echo '<td><a href="http://'.$server->hostname.'.'.env('WEBDB_URL').'" class="glyphicon glyphicon-globe"></a></td>';
+        else
+            echo '<td>&nbsp;</td>';
 
         echo '</tr>';
     }
