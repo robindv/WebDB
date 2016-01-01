@@ -25,16 +25,19 @@ class Server extends Model
 
     function refresh()
     {
-        try{
+        try
+        {
             $states = json_decode(file_get_contents('http://'.env("WEBDB_API").'/vm/'.$this->name));
             $this->state = $states->State;
             $this->uptime = $states->UpTime;
+            $this->memory = $states->MemoryAssigned;
 
         }
         catch(\Exception $exception)
         {
             $this->state = '?';
             $this->uptime = '?';
+            $this->memory = 0;
         }
         $this->save();
     }

@@ -19,7 +19,7 @@
 if($ports)
 {
     echo '<button type="button">Sorteren ongedaan maken</button>';
-    echo '<table style="font-size:12px;" class="tablesorter table">';
+    echo '<table style="font-size:12px;" class="tablesorter">';
     echo '<thead><tr align="left">';
     echo '<th>ListenPort</th><th>Address</th><th>ConnectPort</th>';
     echo '</tr></thead><tbody>';

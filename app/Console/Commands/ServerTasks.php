@@ -55,6 +55,8 @@ class ServerTasks extends Command
 
         if($task)
         {
+            $task->server->refresh();
+
             switch($task->action)
             {
                 case "start":

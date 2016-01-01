@@ -54,7 +54,9 @@ class Tools extends Command
             case 'create-tasks':
                 $this->create_tasks();
                 break;
-
+            case 'double-linux-names':
+                $this->double_linux_names();
+                break;
         }
     }
 
@@ -137,6 +139,22 @@ class Tools extends Command
             $user->linux_name = preg_replace('~&([a-z]{1,2})(acute|cedil|circ|grave|lig|orn|ring|slash|th|tilde|uml);~i', '$1', htmlentities($user->linux_name, ENT_QUOTES, 'UTF-8'));
 
             $user->save();
+        }
+    }
+
+    function double_linux_names()
+    {
+        /* For all groups.. */
+        foreach(Group::all() as $group)
+        {
+            $linux_names = [];
+            foreach($group->students as $student)
+            {
+                if(!in_array($student->user->linux_name, $linux_names))
+                    $linux_names[] = $student->user->linux_name;
+                else
+                    echo "Group ".$group->name. " has multiple users with name ". $student->user->linux_name.".\n";
+            }
         }
     }
 }
