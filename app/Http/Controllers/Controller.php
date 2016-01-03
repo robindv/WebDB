@@ -13,11 +13,11 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    static function modal($title = '', $view, $data = array(), $submit_text = "Opslaan", $class = "primary")
+    static function modal($title = '', $view, $data = [], $submit_text = "Opslaan", $class = "primary")
     {
         if(!Request::ajax())
             return redirect('/');
 
-        return view('modal',array('title' => $title,'submit_text'=>$submit_text,'class'=>$class))->nest('form',$view,$data)->render();
+        return view('modal', ['title' => $title,'submit_text'=>$submit_text,'class'=>$class])->nest('form',$view,$data)->render();
     }
 }

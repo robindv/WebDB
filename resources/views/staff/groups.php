@@ -32,7 +32,7 @@ else
 
         if($group->students)
         {
-            $emails = array();
+            $emails = [];
             foreach($group->students as $student)
                 $emails[] = $student->user->email;
 

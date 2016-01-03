@@ -20,12 +20,12 @@ class FormMacrosServiceProvider extends ServiceProvider
             $size = 2;
 
             if($errors && $errors->has($name))
-                return '<div class="alert alert-danger form-group" style="margin-bottom:10px; margin-right:5px;"><p>'.$errors->first($name).'</p>'.Form::rawLabel($name,$title.($required ? '<em>*</em>' : ""),array('class'=>'col-sm-'.$size.' control-label'));
+                return '<div class="alert alert-danger form-group" style="margin-bottom:10px; margin-right:5px;"><p>'.$errors->first($name).'</p>'.Form::rawLabel($name,$title.($required ? '<em>*</em>' : ""), ['class'=>'col-sm-'.$size.' control-label']);
             else
-                return '<div class="form-group">'.Form::rawLabel($name,$title.($required ? '<em>*</em>' : ""),array('class'=>'col-sm-'.$size.' control-label'));
+                return '<div class="form-group">'.Form::rawLabel($name,$title.($required ? '<em>*</em>' : ""), ['class'=>'col-sm-'.$size.' control-label']);
         });
 
-        Form::macro('rawLabel', function($name, $value = null, $options = array())
+        Form::macro('rawLabel', function($name, $value = null, $options = [])
         {
             $label = Form::label($name, '%s', $options);
 
@@ -53,7 +53,7 @@ class FormMacrosServiceProvider extends ServiceProvider
         {
             $size = 2;
 
-            return '<div class="form-group">'.Form::rawLabel($label,$label,array('class'=>'col-sm-'.$size.' control-label')).'<div class="col-sm-'.(12-$size).'"><p class="form-control-static">'.$value.'</p></div></div>';
+            return '<div class="form-group">'.Form::rawLabel($label,$label, ['class'=>'col-sm-'.$size.' control-label']).'<div class="col-sm-'.(12-$size).'"><p class="form-control-static">'.$value.'</p></div></div>';
         });
 
     }

@@ -69,7 +69,7 @@ class Server extends Model
             $ch = curl_init(env("WEBDB_API")."/stop/".$this->name);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
-            curl_setopt($ch, CURLOPT_POSTFIELDS,http_build_query(array()));
+            curl_setopt($ch, CURLOPT_POSTFIELDS,http_build_query([]));
             $response = curl_exec($ch);
         }
     }
