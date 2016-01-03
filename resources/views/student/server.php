@@ -35,7 +35,7 @@ else
     echo '<span class="col-sm-4">'.$server->uptime.'</span></div>';
     echo '</div>';
 
-    $su = \App\Models\ServerUser::where('server_id',$server->id)->where('user_id',Auth::user()->id)->first();
+    $su = \App\Models\ServerUser::where('server_id',$server->id)->where('created',1)->where('user_id',Auth::id())->first();
     if($su)
     {
         echo '<h2>Inloggegevens</h2>';

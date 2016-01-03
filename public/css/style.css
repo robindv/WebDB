@@ -37,6 +37,7 @@ body{
 ul#menu{
     width: 944px;
     margin: 0 auto 0 auto;
+    padding-left: 0;
 }
 
 ul#menu li, ul#menu li a  {
@@ -47,8 +48,11 @@ ul#menu li, ul#menu li a  {
     font-size: 17px;
     color: #FFFFFF;
     line-height: 50px;
-    padding: 0 15px 0 15px;
     text-decoration: none;
+}
+
+ul#menu li a {
+    padding: 0 25px 0 25px;
 }
 
 ul#menu li:hover{
