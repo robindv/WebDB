@@ -97,10 +97,6 @@ class ServerUsers extends Command
             /* Done, set completed to 1 */
             $task->created = 1;
             $task->save();
-
-            /* Do not create more then 10 users in one batch to avoid race conditions. */
-            if($i == 10)
-                break;
         }
     }
 }
