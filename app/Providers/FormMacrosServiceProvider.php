@@ -20,7 +20,7 @@ class FormMacrosServiceProvider extends ServiceProvider
             $size = 2;
 
             if($errors && $errors->has($name))
-                return '<div class="alert alert-danger form-group" style="margin-bottom:10px; margin-right:5px;"><p>'.$errors->first($name).'</p>'.Form::rawLabel($name,$title.($required ? '<em>*</em>' : ""), ['class'=>'col-sm-'.$size.' control-label']);
+                return '<div class="alert alert-danger form-group" style="margin-bottom:10px; margin:5px;"><p>'.$errors->first($name).'</p>'.Form::rawLabel($name,$title.($required ? '<em>*</em>' : ""), ['class'=>'col-sm-'.$size.' control-label']);
             else
                 return '<div class="form-group">'.Form::rawLabel($name,$title.($required ? '<em>*</em>' : ""), ['class'=>'col-sm-'.$size.' control-label']);
         });
