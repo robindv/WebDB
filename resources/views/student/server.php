@@ -23,7 +23,6 @@ else
     echo '<div class="row"><span class="col-sm-2" style="text-align:left;font-weight: bold;">State</span>';
     echo '<span class="col-sm-4">'.$server->state;
 
-    // TODO: does this work?
     if($server->state == 'Stopped')
         echo '&nbsp;('.link_to('student/server-on/'.$server->id,'Aanzetten').')';
 

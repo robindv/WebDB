@@ -158,4 +158,50 @@ class CloudStackConnector
         ]);
     }
 
+    function list_service_offerings()
+    {
+        return $this->do_get_request([
+            "command" => "listServiceOfferings",
+            "listAll" => "true"
+        ]);
+    }
+
+    function list_networks()
+    {
+        return $this->do_get_request([
+            "command" => "listNetworks",
+            "listAll" => "true"
+        ]);
+    }
+
+    function list_zones()
+    {
+        return $this->do_get_request([
+            "command" => "listZones"
+        ]);
+    }
+
+    function list_templates($filter = "community")
+    {
+        return $this->do_get_request([
+            "command" => "listTemplates",
+            "templatefilter" => $filter,
+            "listAll" => "true"
+        ]);
+    }
+
+    function deploy_virtual_machine($name)
+    {
+        return $this->do_get_request([
+            "command" => "deployVirtualMachine",
+            "name"    => $name,
+            "serviceofferingid" => env('CLOUDSTACK_SERVICEOFFERINGID'),
+            "templateid" => env('CLOUDSTACK_TEMPLATEID'),
+            "zoneid" => env("CLOUDSTACK_ZONEID"),
+            "networkids" => env('CLOUDSTACK_NETWORKID'),
+        ]);
+
+        // store id from deployvirtualmachineresponse->id
+    }
+
 }
