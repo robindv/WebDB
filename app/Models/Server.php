@@ -25,52 +25,45 @@ class Server extends Model
 
     function refresh()
     {
-        try
-        {
-            $states = json_decode(file_get_contents('http://'.env("WEBDB_API").'/vm/'.$this->name));
-            $this->state = $states->State;
-            $this->uptime = $states->UpTime;
-            $this->memory = $states->MemoryAssigned;
+        if($this->cloudstack_id == null)
+            return;
+        $connector = new \App\Connectors\CloudStackConnector();
+        $vm = $connector->get_virtual_machine_info($this->cloudstack_id);
+        if($vm == null)
+            return;
 
-        }
-        catch(\Exception $exception)
-        {
-            $this->state = '?';
-            $this->uptime = '?';
-            $this->memory = 0;
-        }
+        $this->name = $vm->name;
+        $this->state = $vm->state;
+        $this->uptime = '?';
+        $this->memory = $vm->memory;
+        $this->ip_address = $vm->nic[0]->ipaddress;
         $this->save();
+    }
+
+    function getHostnameAttribute()
+    {
+        $ip = explode(".", $this->ip_address);
+        if(count($ip) != 4)
+            return "";
+
+        return str_replace("XXX", $ip[3] ,env('WEBDB_VM_DOMAINS'));
     }
 
     function start()
     {
-        /* Refresh state */
-        $this->refresh();
-
-        /* Only start when not running at this moment. */
-        if($this->state != 'Running')
-        {
-            $ch = curl_init(env("WEBDB_API")."/start/".$this->name);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
-            curl_setopt($ch, CURLOPT_POSTFIELDS,http_build_query([]));
-            $response = curl_exec($ch);
-        }
+        if($this->cloudstack_id == null)
+            return;
+        $connector = new \App\Connectors\CloudStackConnector();
+        $connector->start_virtual_machine($this->cloudstack_id);
+        sleep(3);
     }
 
     function stop()
     {
-        /* Refresh state */
-        $this->refresh();
-
-        /* Only start when not running at this moment. */
-        if($this->state != 'Off')
-        {
-            $ch = curl_init(env("WEBDB_API")."/stop/".$this->name);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
-            curl_setopt($ch, CURLOPT_POSTFIELDS,http_build_query([]));
-            $response = curl_exec($ch);
-        }
+        if($this->cloudstack_id == null)
+            return;
+        $connector = new \App\Connectors\CloudStackConnector();
+        $connector->stop_virtual_machine($this->cloudstack_id);
+        sleep(3);
     }
 }

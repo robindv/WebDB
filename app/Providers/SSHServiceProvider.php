@@ -13,7 +13,7 @@ class SSHServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $connections = [];
+        /*$connections = [];
         foreach(\App\Models\Server::where('created',1)->get() as $server)
         {
             $connections[$server->name] = ['host'      => $server->ip_address,
@@ -22,7 +22,7 @@ class SSHServiceProvider extends ServiceProvider
                                            'keyphrase' => '',
                                            'timeout'   => 10];
         }
-        config(['remote.connections' => $connections]);
+        config(['remote.connections' => $connections]);*/
     }
 
     /**

@@ -22,17 +22,18 @@ if($servers)
     echo '<button type="button" class="btn btn-default pull-right">Sorteren ongedaan maken</button>';
     echo '<table style="font-size:12px;" class="tablesorter">';
     echo '<thead><tr align="left">';
-    echo '<th>Server</th><th>IP adres</th><th>Aangemaakt</th>';
-    echo '<th>Geheugen</th><th>State</th><th>Up Time</th><th>Groep</th>';
+    echo '<th>Server</th><th>Domeinnaam</th><th>IP adres</th><th>Aangemaakt</th>';
+    echo '<th>Geheugen</th><th>State</th><th>Groep</th>';
     echo '<th>&nbsp;</th></tr></thead><tbody>';
     foreach($servers as $server)
     {
         echo '<tr id="'.$server->id.'">';
 
         echo '<td>'.link_to('staff/server/'.$server->id,$server->name).'</td>';
+        echo '<td>'.$server->hostname.'</td>';
         echo '<td>'.$server->ip_address.'</td>';
 
-        if($server->created)
+        if($server->cloudstack_id)
             echo '<td><span class="glyphicon glyphicon-ok"></span>';
         else
             echo '<td><span class="glyphicon glyphicon-remove"></span>';
@@ -43,7 +44,7 @@ if($servers)
             echo '<span class="glyphicon glyphicon-remove"></span></td>';
 
         if($server->memory)
-            echo '<td>'.($server->memory/(1024*1024)).' MiB</td>';
+            echo '<td>'.$server->memory.' MiB</td>';
         else
             echo '<td>&nbsp;</td>';
 
@@ -56,11 +57,6 @@ if($servers)
 
         if($server->group)
             echo '<td>'.link_to('staff/groups#'.$server->group->id,$server->group->name).'</td>';
-        else
-            echo '<td>&nbsp;</td>';
-
-        if($server->state == 'Running')
-            echo '<td><a href="http://'.$server->hostname.'.'.env('WEBDB_URL').'" class="glyphicon glyphicon-globe"></a></td>';
         else
             echo '<td>&nbsp;</td>';
 

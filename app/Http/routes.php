@@ -69,4 +69,10 @@ Route::group(['middleware' => ['web']], function () {
         Route::post('/student/domain-delete-modal/{domain}','StudentController@postDomainDeleteModal');
 
     });
+
+    Route::get('/test', function(){
+        $connector = new \App\Connectors\CloudStackConnector();
+
+
+    });
 });

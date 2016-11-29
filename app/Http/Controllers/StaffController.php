@@ -47,6 +47,8 @@ class StaffController extends Controller
 
     function getServer(Server $server)
     {
+        $server->refresh();
+
         return view('layout')->nest('page','staff.server',['server' => $server]);
     }
 
