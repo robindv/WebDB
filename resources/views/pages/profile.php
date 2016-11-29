@@ -1,6 +1,5 @@
-<h1>Profiel</h1>
-
 <?php
+echo '<h1>Profiel</h1>';
 
 echo '<div class="container">';
 echo '<div class="row"><span class="col-sm-2" style="text-align:left;font-weight: bold;">Naam</span>';
@@ -17,17 +16,18 @@ if($user->student)
 }
 
 echo '</div>';
-?>
+
+echo '
 <script type="text/javascript">
     $(function() {
         $("table").tablesorter({
-            theme: 'default',
+            theme: "default",
             widgets: ["zebra"],
         });
     });
-</script>
-<h2>Mijn wachtwoorden</h2>
-<?php
+</script>';
+
+echo '<h2>Mijn wachtwoorden</h2>';
 if (!count($passwords))
 {
     echo '<p>Er zijn geen wachtwoorden gevonden.</p>';
@@ -35,12 +35,11 @@ if (!count($passwords))
 else
 {
     echo '<table>';
-    echo '<thead><tr><th>Server</th><th>SSH-poort</th><th>Gebruikersnaam</th><th>Wachtwoord</th></tr></thead><tbody>';
+    echo '<thead><tr><th>Server</th><th>Gebruikersnaam</th><th>Wachtwoord</th></tr></thead><tbody>';
     foreach($passwords as $password)
     {
         echo '<tr>';
-        echo '<td>'.$password->server->hostname.'.'.env('WEBDB_URL').'</td>';
-        echo '<td>'.$password->server->ssh_port.'</td>';
+        echo '<td>'.$password->server->hostname.'</td>';
         echo '<td>'.$password->username.'</td>';
         echo '<td>'.$password->password.'</td>';
         echo '</tr>';

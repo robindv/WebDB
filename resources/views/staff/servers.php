@@ -52,11 +52,14 @@ if($servers)
             echo '<td>'.link_to('staff/server-on/'.$server->id,$server->state).'&nbsp;</td>';
         else
             echo '<td>'.$server->state.'&nbsp;</td>';
-        echo '<td>'.$server->uptime.'&nbsp;</td>';
-
 
         if($server->group)
             echo '<td>'.link_to('staff/groups#'.$server->group->id,$server->group->name).'</td>';
+        else
+            echo '<td>&nbsp;</td>';
+
+        if($server->state == 'Running')
+            echo '<td><a href="http://'.$server->hostname.'" class="glyphicon glyphicon-globe"></a></td>';
         else
             echo '<td>&nbsp;</td>';
 

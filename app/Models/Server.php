@@ -34,7 +34,6 @@ class Server extends Model
 
         $this->name = $vm->name;
         $this->state = $vm->state;
-        $this->uptime = '?';
         $this->memory = $vm->memory;
         $this->ip_address = $vm->nic[0]->ipaddress;
         $this->save();

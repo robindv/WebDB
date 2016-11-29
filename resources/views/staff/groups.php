@@ -46,8 +46,8 @@ else
         else
             echo '<td>Onbekend</td>';
 
-        if($group->project)
-            echo '<td>'.link_to('http://'.$group->server->hostname.'.'.env('WEBDB_URL'),$group->project->name).'</td>';
+        if($group->project && $group->server)
+            echo '<td>'.link_to('http://'.$group->server->hostname, $group->project->name).'</td>';
         else
             echo '<td>Onbekend</td>';
 

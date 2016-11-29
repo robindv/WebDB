@@ -50,10 +50,6 @@
                 echo '<li>'.link_to('student/project','Project').'</li>';
                 echo '<li>'.link_to('student/server','Server').'</li>';
             }
-            if(Auth::id() == 1)
-            {
-                echo '<li>'.link_to('staff/ports','Poorten').'</li>';
-            }
 
             echo '<li>'.link_to('profile',Auth::user()->firstname).'</li>';
             echo '<li>'.link_to('logout','Uitloggen').'<li>';

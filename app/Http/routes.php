@@ -43,7 +43,7 @@ Route::group(['middleware' => ['web']], function () {
         Route::get('/staff/groups-export/webdb-groepen.csv', 'StaffController@getGroupsExport');
 
 
-        Route::get('/staff/ports', 'StaffController@getPorts');
+        // Route::get('/staff/ports', 'StaffController@getPorts');
         Route::get('/staff/servers', 'StaffController@getServers');
         Route::get('/staff/server/{server}', 'StaffController@getServer');
         Route::get('/staff/server-on/{server}', 'StaffController@getServerOn');
@@ -62,6 +62,7 @@ Route::group(['middleware' => ['web']], function () {
         Route::get('/student/project','StudentController@getProject');
         Route::post('/student/project','StudentController@postProject');
         Route::get('/student/server','StudentController@getServer');
+        Route::get('/student/server-on/{server}', 'StudentController@getServerOn');
 
         Route::get('/student/domain-add-modal','StudentController@getDomainAddModal');
         Route::post('/student/domain-add-modal','StudentController@postDomainAddModal');
@@ -70,9 +71,4 @@ Route::group(['middleware' => ['web']], function () {
 
     });
 
-    Route::get('/test', function(){
-        $connector = new \App\Connectors\CloudStackConnector();
-
-
-    });
 });
