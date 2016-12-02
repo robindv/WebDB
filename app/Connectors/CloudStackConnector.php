@@ -4,116 +4,37 @@ namespace App\Connectors;
 
 class CloudStackConnector
 {
-    private $user;
-    private $password;
-    private $domain;
+    private $apikey;
+    private $secretkey;
     private $url;
-
-    /* After session has been established */
-    private $sessionkey;
-    private $userid;
-    private $domainid;
-    private $sessionid;
-    private $expires;
 
     function __construct()
     {
-        $this->user = env('CLOUDSTACK_USER');
-        $this->password = env('CLOUDSTACK_PASSWORD');
-        $this->domain = env('CLOUDSTACK_DOMAIN');
+        $this->apikey = env('CLOUDSTACK_APIKEY');
+        $this->secretkey = env('CLOUDSTACK_SECRETKEY');
         $this->url = env('CLOUDSTACK_URL');
-
-        $this->load_sessionfile();
-
-        if($this->sessionkey == null)
-        {
-            $this->get_sessionkey();
-            $this->save_sessionfile();
-        }
-
     }
 
-    private function load_sessionfile()
+    private function get_signature($params)
     {
-         $data = unserialize(file_get_contents(env('CLOUDSTACK_SESSION_FILE')));
-
-         if($data['expires'] > time())
-         {
-             $this->sessionkey = $data['sessionkey'];
-             $this->userid = $data['userid'];
-             $this->domainid = $data['domainid'];
-             $this->sessionid = $data['sessionid'];
-             $this->expires = $data['expires'];
-         }
-    }
-
-    private function save_sessionfile()
-    {
-        $data = ['sessionkey' => $this->sessionkey,
-                 'userid' => $this->userid,
-                 'domainid' => $this->domainid,
-                 'sessionid' => $this->sessionid,
-                 'expires' => $this->expires];
-
-         file_put_contents(env('CLOUDSTACK_SESSION_FILE'), serialize($data));
-    }
-
-    private function get_sessionkey()
-    {
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $this->url);
-
-        $fields = ["command" => "login",
-                   "domain" => "/" . $this->domain,
-                   "password" => $this->password,
-                   "username" => $this->user,
-                   "response" => 'json'];
-
+        ksort($params);
         $fieldstring = [];
-        foreach($fields as $key => $value)
-            $fieldstring[] = $key.'='.urlencode($value);
+        foreach($params as $key => $value)
+            $fieldstring[] = strtolower($key.'='.urlencode($value));
         $fieldstring = implode('&', $fieldstring);
 
-        curl_setopt($ch, CURLOPT_POST, count($fields));
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $fieldstring);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_HEADER, 1);
-        $response = curl_exec($ch);
-        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-
-        $header = substr($response, 0, $header_size);
-        $header = explode("\r\n",$header);
-
-        foreach($header as $line)
-        {
-            if(preg_match("/Set-Cookie: JSESSIONID=(.*);/", $line, $output_array))
-            {
-                $this->sessionid = $output_array[1];
-            }
-        }
-
-
-        $result = json_decode(substr($response, $header_size));
-        $this->sessionkey = $result->loginresponse->sessionkey;
-        $this->userid = $result->loginresponse->userid;
-        $this->domainid = $result->loginresponse->domainid;
-        $this->expires = time() + $result->loginresponse->timeout - 30;
+        return urlencode(base64_encode(hash_hmac("sha1", $fieldstring, $this->secretkey, true)));
     }
 
     private function do_get_request($params)
     {
         $params["response"] = "json";
+        $params["apiKey"] = $this->apikey;
         $ch = curl_init();
 
-        $fieldstring = [];
-        foreach($params as $key => $value)
-            $fieldstring[] = $key.'='.urlencode($value);
-        $fieldstring = implode('&', $fieldstring);
+        $fieldstring = implode('&', array_map(function($key, $value) { return $key.'='.urlencode($value); }, array_keys($params), $params));
 
-        $cookiestring = "sessionkey=".$this->sessionkey. "; JSESSIONID=".$this->sessionid;
-
-        curl_setopt($ch, CURLOPT_URL, $this->url . "?" . $fieldstring);
-        curl_setopt($ch, CURLOPT_COOKIE, $cookiestring);
+        curl_setopt($ch, CURLOPT_URL, $this->url . "?" . $fieldstring . "&signature=" . $this->get_signature($params));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         $result = curl_exec($ch);
 
