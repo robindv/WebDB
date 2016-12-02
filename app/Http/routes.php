@@ -71,4 +71,10 @@ Route::group(['middleware' => ['web']], function () {
 
     });
 
+    Route::group(['middleware' => 'admin'], function() {
+        Route::get('/admin/config', 'AdminController@getConfig');
+        Route::post('/admin/config', 'AdminController@postConfig');
+
+    });
+
 });

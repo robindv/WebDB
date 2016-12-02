@@ -102,7 +102,7 @@ class CloudStackConnector
         ]);
     }
 
-    function list_templates($filter = "community")
+    function list_templates($filter = "executable")
     {
         return $this->do_get_request([
             "command" => "listTemplates",
