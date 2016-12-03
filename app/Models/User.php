@@ -38,6 +38,11 @@ class User extends Model implements Authenticatable
         // TODO: Implement getRememberTokenName() method.
     }
 
+    public function getIsAdminAttribute()
+    {
+        return $this->id == 1;
+    }
+
     public function is_student()
     {
         return $this->student != NULL;

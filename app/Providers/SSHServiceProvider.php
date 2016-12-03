@@ -13,16 +13,16 @@ class SSHServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        /*$connections = [];
-        foreach(\App\Models\Server::where('created',1)->get() as $server)
+        $connections = [];
+        foreach(\App\Models\Server::whereNotNull('cloudstack_id')->get() as $server)
         {
             $connections[$server->name] = ['host'      => $server->ip_address,
                                            'username'  => 'root',
-                                           'key'       => storage_path('webdb.key'),
-                                           'keyphrase' => '',
+                                           'key'       => env('SSH_KEYPATH'),
+                                           'keyphrase' => env('SSH_PASSPHRASE'),
                                            'timeout'   => 10];
         }
-        config(['remote.connections' => $connections]);*/
+        config(['remote.connections' => $connections]);
     }
 
     /**

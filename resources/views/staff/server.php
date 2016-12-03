@@ -43,6 +43,28 @@ foreach($server->users as $su)
 }
 echo '</tbody></table>';
 
+if(Auth::user()->isAdmin)
+{
+    echo '<h2>Taken</h2>';
+
+    echo '<table>';
+    echo '<thead>';
+    echo '<tr>';
+    echo '<th>Aangemaakt</th>';
+    echo '<th>Taak</th>';
+    echo '<th>Status</th>';
+    echo '<th>Voltooid</th>';
+    echo '</tr></thead><tbody>';
+
+    foreach($server->tasks as $task)
+    {
+        echo '<tr><td>'.$task->created_at.'</td>';
+        echo '<td>'.$task->action.'</td>';
+        echo '<td>'.$task->status.'</td>';
+        echo '<td>'.$task->updated_at.'</td>';
+        echo '</tr>';
+    }
+}
 
 
 // echo '<h2>Domeinnamen</h2>';

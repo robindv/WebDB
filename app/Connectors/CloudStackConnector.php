@@ -111,18 +111,16 @@ class CloudStackConnector
         ]);
     }
 
-    function deploy_virtual_machine($name)
+    function deploy_virtual_machine($name, $serviceofferingid, $templateid, $zoneid, $networkid)
     {
         return $this->do_get_request([
             "command" => "deployVirtualMachine",
             "name"    => $name,
-            "serviceofferingid" => env('CLOUDSTACK_SERVICEOFFERINGID'),
-            "templateid" => env('CLOUDSTACK_TEMPLATEID'),
-            "zoneid" => env("CLOUDSTACK_ZONEID"),
-            "networkids" => env('CLOUDSTACK_NETWORKID'),
+            "serviceofferingid" => $serviceofferingid,
+            "templateid" =>$templateid,
+            "zoneid" => $zoneid,
+            "networkids" => $networkid,
         ]);
-
-        // store id from deployvirtualmachineresponse->id
     }
 
 }

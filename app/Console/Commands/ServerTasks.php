@@ -51,7 +51,7 @@ class ServerTasks extends Command
     public function handle()
     {
         /* Retrieve a task that is not completed yet */
-        $task = ServerTask::where('completed','0')->first();
+        $task = ServerTask::where('status','0')->first();
 
         if($task)
         {
@@ -64,6 +64,9 @@ class ServerTasks extends Command
                     break;
                 case "create":
                     $this->create($task);
+                    break;
+                case "ssl":
+                    $this->ssl($task);
                     break;
                 case "configure":
                     $this->configure_server($task);
@@ -93,7 +96,7 @@ class ServerTasks extends Command
             $task->server->start();
             $this->info($task->server->name .' started.');
         }
-        $task->completed = 1;
+        $task->status = 1;
         $task->save();
     }
 
@@ -105,43 +108,22 @@ class ServerTasks extends Command
     private function create($task)
     {
         /* Check if the has already server been created */
-        if($task->server->created == 1)
+        if($task->server->created)
         {
             $this->error($task->server->name.' already created.');
             return;
         }
-
         $this->info('Creating '.$task->server->name);
 
-        /* Put parameters into a POST request */
-        $fields['Name'] = $task->server->name;
-        $fields['MacAddress'] = $task->server->mac_address;
-        $fields['IPAddress'] = $task->server->ip_address;
-        $fields['Memory'] = 2147483648;
-        $fields['ImageName'] = env('WEBDB_IMAGE_NAME');
-
-        $fields_string = "";
-        foreach($fields as $key=>$value) { $fields_string .= $key.'='.$value.'&'; }
-        $fields_string = rtrim($fields_string, '&');
-
-        /* Send request to the server */
-        $ch = curl_init();
-        curl_setopt($ch,CURLOPT_URL, "http://".env("WEBDB_API")."/vm");
-        curl_setopt($ch,CURLOPT_POST, count($fields));
-        curl_setopt($ch,CURLOPT_POSTFIELDS, $fields_string);
-        //    curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
-        $result = curl_exec($ch);
-        curl_close($ch);
-
-        if($result == "true")
+        $state = $task->server->deploy();
+        if($state === true)
+            $task->status = 1;
+        else
         {
-            /* Done, store status in database */
-            $task->server->created = 1;
-            $task->server->save();
-
-            $task->completed = 1;
-            $task->save();
+            $task->status = 2;
+            $this->error($state);
         }
+        $task->save();
     }
 
 
@@ -152,43 +134,48 @@ class ServerTasks extends Command
      */
     private function configure_server($task)
     {
+        $server = $task->server;
+
         /* Check if the server has already been configured */
-        if($task->server->configured == 1)
+        if($server->configured == 1)
         {
-            $this->error($task->server->name.' already configured.');
+            $this->error($server->name.' already configured.');
             return;
         }
 
         /* Make sure the server is up and running */
-        if($task->server->state != 'Running')
+        if($server->state != 'Running')
         {
-            $this->error($task->server->name.' is not running.');
-            return;
-        }
-
-        /* Check that the server is assigned to a group */
-        if(!$task->server->hostname)
-        {
-            $this->error($task->server->name. ' has not a hostname.');
+            $this->error($server->name.' is not running.');
             return;
         }
 
         /* Generate passwords for phpmyadmin and debian-sys-maint mysql-users */
-        $task->server->mysql_debian_pass = $this->rand_string(14);
+        $mysql_debian_pass = $this->rand_string(14);
 
-        /* Create the configuration file */
-        $hostname = $task->server->hostname;
+        /* Only use the prefix of the full hostname */
+        $hostname = explode(".",$server->hostname)[0];
+        $template_hostname = env('WEBDB_TEMPLATE_HOSTNAME');
 
         /* Connect to server */
         $commands = [];
+
+        /* Hostname */
         $commands[] = "echo ".$hostname." > /etc/hostname";
-        $commands[] = "sed -i 's/webdb0/".$hostname."/g' /etc/hosts";
-        $commands[] = "sed -i 's/webdb0/".$hostname."/g' /etc/php/7.0/apache2/conf.d/40-webdb.ini";
-        $commands[] = "sed -i 's/webdb0/".$hostname."/g' /etc/php/7.0/cli/conf.d/40-webdb.ini";
-        $commands[] = "sed -i 's/webdb0/".$hostname."/g' /var/www/phpmyadmin/config.inc.php";
-        $commands[] = "sed -i 's/127.0.1.1/".$task->server->ip_address."/g' /etc/hosts";
-        $commands[] = "mysql -u debian-sys-maint -p".env('WEBDB_IMAGE_MYSQL_PASS')." mysql -e \"SET PASSWORD FOR 'debian-sys-maint'@'localhost' = PASSWORD('".$task->server->mysql_debian_pass."');FLUSH PRIVILEGES\"";
-        $commands[] = "sed -i 's/".env('WEBDB_IMAGE_MYSQL_PASS')."/".$task->server->mysql_debian_pass."/g' /etc/mysql/debian.cnf";
+        $commands[] = 'echo -e "127.0.0.1\tlocalhost\n'.$server->ip_address.'\t'.$hostname.' '.$server->hostname.'" > /etc/hosts';
+
+        /* phpmyadmin */
+        $commands[] = "sed -i 's/webdb-do-replace-00000000000000000000000000000000000/".$this->rand_string(32)."/g' /var/www/phpmyadmin/config.inc.php";
+
+        /* Apache */
+        $commands[] = "sed -i 's/webdb-2017-template/".$hostname."/g' /etc/apache2/sites-available/webdb.conf";
+
+        /* MySQL */
+        $commands[] = 'export mp=`cat /etc/mysql/debian.cnf | grep -m 1 \'password\' | awk -F\'= \' \'{print $2}\'`';
+        $commands[] = 'mysql -u debian-sys-maint -p${mp}'." mysql -e \"SET PASSWORD FOR 'debian-sys-maint'@'localhost' = PASSWORD('".$mysql_debian_pass."');FLUSH PRIVILEGES\"";
+        $commands[] = 'sed -i "s/${mp}/'.$mysql_debian_pass.'/g" /etc/mysql/debian.cnf';
+
+        /* Security fixes */
         $commands[] = "passwd --lock root";
         $commands[] = "rm /etc/ssh/ssh_host_*";
         $commands[] = "/usr/sbin/dpkg-reconfigure openssh-server";
@@ -203,16 +190,25 @@ class ServerTasks extends Command
         $commands[] = "rm -f /root/.bash_history";
         $commands[] = "history -c && history -w && reboot";
 
-        SSH::into($task->server->name)->run($commands);
-
+        SSH::into($server->name)->run($commands);
 
         /* Store server as 'configured' */
         $task->server->configured = 1;
         $task->server->save();
 
         /* Set task as completed */
-        $task->completed = 1;
+        $task->status = 1;
         $task->save();
 
+    }
+
+    private function ssl($task)
+    {
+        $commands[] = "certbot --apache --non-interactive --register-unsafely-without-email --agree-tos -d ".$task->server->hostname;
+        SSH::into($task->server->name)->run($commands);
+
+        /* Set task as completed */
+        $task->status = 1;
+        $task->save();
     }
 }

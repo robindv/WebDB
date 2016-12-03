@@ -40,14 +40,12 @@ class ServerStates extends Command
     {
         $this->info('Retrieving server states from API.');
 
-        $states = json_decode(file_get_contents('http://'.env("WEBDB_API").'/vm'));
+        $connector = new \App\Connectors\CloudStackConnector();
 
-        $this->info('Storing states into database...');
-
-        foreach($states as $server)
+        foreach($connector->list_virtual_machines()->listvirtualmachinesresponse->virtualmachine as $vm)
         {
-            $state = ['state'=>$server->State, 'uptime'=>$server->UpTime, 'memory'=>$server->MemoryAssigned];
-            DB::table('servers')->where('mac_address',$server->MacAddress)->update($state);
+            $state = ['name' => $vm->name, 'state'=>$vm->state, 'memory'=>$vm->memory, 'ip_address' => $vm->nic[0]->ipaddress];
+            DB::table('servers')->where('cloudstack_id',$vm->id)->update($state);
         }
 
         $this->info('Success');

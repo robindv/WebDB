@@ -76,23 +76,22 @@ class ServerUsers extends Command
             $i++;
 
             /* Generate a password */
-            $task->password = $this->rand_string(8);
+            $task->password = $this->rand_string(14);
             $task->username = $task->user->linux_name;
-
 
             /* Connect to the server */
             $commands = [];
             $commands[] = "unset HISTFILE";
             $commands[] = "useradd -g users -G sudo -s /bin/bash -m -p`mkpasswd ".$task->password."` ".$task->username;
-            $commands[] = "mysql -u debian-sys-maint -p".$task->server->mysql_debian_pass." mysql -e \"CREATE USER '".$task->username."'@'localhost' IDENTIFIED BY '".$task->password."'; GRANT ALL PRIVILEGES ON *.* TO '".$task->username."'@'localhost' WITH GRANT OPTION; FLUSH PRIVILEGES\"";
-            $commands[] = "htpasswd -b /etc/apache2/.mailcatcher-htpasswd ".$task->username." ".$task->password;
+            $commands[] = 'export mp=`cat /etc/mysql/debian.cnf | grep -m 1 \'password\' | awk -F\'= \' \'{print $2}\'`';
+            $commands[] = 'mysql -u debian-sys-maint -p${mp}'." mysql -e \"CREATE USER '".$task->username."'@'localhost' IDENTIFIED BY '".$task->password."'; GRANT ALL PRIVILEGES ON *.* TO '".$task->username."'@'localhost' WITH GRANT OPTION; FLUSH PRIVILEGES\"";
             $commands[] = "mkdir /home/".$task->username."/public_html";
             $commands[] = "chmod +x /home/".$task->username."/public_html";
             $commands[] = "echo 'Dit bestand staat in je <u>public_html</u> directory!' > /home/".$task->username."/public_html/test.html";
             $commands[] = "chown -R ".$task->username.":users /home/".$task->username."/public_html";
             $commands[] = "chmod g-w /home/".$task->username;
 
-            SSH::into($task->server->name)->run($commands);
+            $r = SSH::into($task->server->name)->run($commands);
 
             /* Done, set completed to 1 */
             $task->created = 1;

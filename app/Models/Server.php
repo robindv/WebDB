@@ -22,11 +22,16 @@ class Server extends Model
         return $this->hasMany('App\Models\ServerUser');
     }
 
+    function tasks()
+    {
+        return $this->hasMany('App\Models\ServerTask');
+    }
 
     function refresh()
     {
         if($this->cloudstack_id == null)
             return;
+
         $connector = new \App\Connectors\CloudStackConnector();
         $vm = $connector->get_virtual_machine_info($this->cloudstack_id);
         if($vm == null)
@@ -46,6 +51,34 @@ class Server extends Model
             return "";
 
         return str_replace("XXX", $ip[3] ,env('WEBDB_VM_DOMAINS'));
+    }
+
+    function getCreatedAttribute()
+    {
+        return $this->cloudstack_id != null;
+    }
+
+    function deploy()
+    {
+        if($this->cloudstack_id != null)
+            return;
+
+        $connector = new \App\Connectors\CloudStackConnector();
+
+        $zoneid    = Configuration::where('name','cloudstack_zoneid')->first()->value;
+        $networkid = Configuration::where('name','cloudstack_networkid')->first()->value;
+        $serviceofferingid = Configuration::where('name','cloudstack_serviceofferingid')->first()->value;
+        $templateid = Configuration::where('name','cloudstack_templateid')->first()->value;
+
+        $response = $connector->deploy_virtual_machine($this->name, $serviceofferingid, $templateid, $zoneid, $networkid)->deployvirtualmachineresponse;
+
+        if(isset($response->errorcode))
+            return $response->errortext;
+
+        $this->cloudstack_id = $response->id;
+        $this->save();
+        return true;
+
     }
 
     function start()
