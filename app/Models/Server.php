@@ -50,7 +50,7 @@ class Server extends Model
         if(count($ip) != 4)
             return "";
 
-        return str_replace("XXX", $ip[3] ,env('WEBDB_VM_DOMAINS'));
+        return str_replace("XXX", sprintf("%03d",$ip[3]), env('WEBDB_VM_DOMAINS'));
     }
 
     function getCreatedAttribute()

@@ -168,7 +168,7 @@ class ServerTasks extends Command
         $commands[] = "sed -i 's/webdb-do-replace-00000000000000000000000000000000000/".$this->rand_string(32)."/g' /var/www/phpmyadmin/config.inc.php";
 
         /* Apache */
-        $commands[] = "sed -i 's/webdb-2017-template/".$hostname."/g' /etc/apache2/sites-available/webdb.conf";
+        $commands[] = "sed -i 's/hostname/".$hostname."/g' /etc/apache2/sites-available/webdb.conf";
 
         /* MySQL */
         $commands[] = 'export mp=`cat /etc/mysql/debian.cnf | grep -m 1 \'password\' | awk -F\'= \' \'{print $2}\'`';
