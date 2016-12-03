@@ -162,6 +162,7 @@ class ServerTasks extends Command
 
         /* Hostname */
         $commands[] = "echo ".$hostname." > /etc/hostname";
+        $commands[] = "echo ".$server->hostname." > /etc/mailname";
         $commands[] = 'echo -e "127.0.0.1\tlocalhost\n'.$server->ip_address.'\t'.$hostname.' '.$server->hostname.'" > /etc/hosts';
 
         /* phpmyadmin */
