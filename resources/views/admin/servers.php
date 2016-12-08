@@ -29,7 +29,7 @@ if($servers)
     {
         echo '<tr id="'.$server->id.'">';
 
-        echo '<td>'.link_to('staff/server/'.$server->id,$server->name).'</td>';
+        echo '<td>'.link_to('admin/server/'.$server->id,$server->name).'</td>';
         echo '<td>'.$server->hostname.'</td>';
         echo '<td>'.$server->ip_address.'</td>';
 
@@ -49,7 +49,7 @@ if($servers)
             echo '<td>&nbsp;</td>';
 
         if($server->state == 'Off')
-            echo '<td>'.link_to('staff/server-on/'.$server->id,$server->state).'&nbsp;</td>';
+            echo '<td>'.link_to('admin/server-on/'.$server->id,$server->state).'&nbsp;</td>';
         else
             echo '<td>'.$server->state.'&nbsp;</td>';
 

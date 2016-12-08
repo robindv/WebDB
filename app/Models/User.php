@@ -8,6 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class User extends Model implements Authenticatable
 {
 
+    public $student_role   = 1;
+    public $assistant_role = 2;
+    public $teacher_role   = 4;
+    public $admin_role     = 8;
+
     public function getAuthIdentifierName()
     {
         return $this->uvanetid;
@@ -40,7 +45,17 @@ class User extends Model implements Authenticatable
 
     public function getIsAdminAttribute()
     {
-        return $this->id == 1;
+        return $this->role & $this->admin_role;
+    }
+
+    public function getIsAssistantAttribute()
+    {
+        return $this->role & $this->assistant_role;
+    }
+
+    public function getIsTeacherAttribute()
+    {
+        return $this->role & $this->teacher_role;
     }
 
     public function is_student()

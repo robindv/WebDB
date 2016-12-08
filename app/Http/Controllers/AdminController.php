@@ -18,6 +18,35 @@ class AdminController extends Controller
         $this->connector = new CloudStackConnector();
     }
 
+    function getServers()
+    {
+        $data['servers'] = Server::orderBy('name')->with('group')->get();
+
+        return view('layout')->nest('page','admin.servers',$data);
+    }
+
+    function getServer(Server $server)
+    {
+        $server->refresh();
+
+        return view('layout')->nest('page','admin.server',['server' => $server]);
+    }
+
+    function getServerOn(Server $server)
+    {
+        $server->start();
+        $server->refresh();
+
+        return redirect()->back();
+    }
+
+    function getServerOff(Server $server)
+    {
+        $server->stop();
+
+        return redirect()->back();
+    }
+
     function getConfig()
     {
         $data['zones'] = [];
@@ -51,5 +80,7 @@ class AdminController extends Controller
 
         return redirect()->back();
     }
+
+
 
 }

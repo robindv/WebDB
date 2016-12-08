@@ -35,28 +35,32 @@
         <li><?php echo link_to('/','Home'); ?></li>
         <?php
 
-        if(Auth::id() != 1)
+        if(! Auth::check() || ! Auth::user()->is_admin)
             echo '<li>'.link_to('voorbeeldcode','Voorbeeldcode').'</li>';
+
         if (Auth::check())
         {
-            if(!Auth::user()->is_student())
-            {
-                echo '<li>'.link_to('staff/students','Studenten').'</li>';
-                echo '<li>'.link_to('staff/groups','Groepen').'</li>';
-                echo '<li>'.link_to('staff/servers','Servers').'</li>';
-            }
-            else
+            $user = Auth::user();
+
+            if($user->is_student())
             {
                 echo '<li>'.link_to('student/project','Project').'</li>';
                 echo '<li>'.link_to('student/server','Server').'</li>';
             }
 
-            if(Auth::id() == 1)
+            if($user->is_assistant || $user->is_teacher)
             {
+                echo '<li>'.link_to('staff/students','Studenten').'</li>';
+                echo '<li>'.link_to('staff/groups','Groepen').'</li>';
+            }
+
+            if($user->is_admin)
+            {
+                echo '<li>'.link_to('admin/servers','Servers').'</li>';
                 echo '<li>'.link_to('admin/config', 'Configuratie').'</li>';
             }
 
-            echo '<li>'.link_to('profile',Auth::user()->firstname).'</li>';
+            echo '<li>'.link_to('profile',$user->firstname).'</li>';
             echo '<li>'.link_to('logout','Uitloggen').'<li>';
         }
         else

@@ -13,15 +13,6 @@ use Illuminate\Support\Facades\Validator;
 class StaffController extends Controller
 {
 
-    function getPorts()
-    {
-        $data['ports'] = json_decode(file_get_contents('http://'.env("WEBDB_API").'/port/'));
-
-        usort($data['ports'], function($a, $b){ return strcmp($a->ListenPort, $b->ListenPort); });
-
-        return view('layout')->nest('page','staff.ports',$data);
-    }
-
     function getGroups()
     {
         $data['groups'] = Group::orderBy('id')->with('students','students.user','project','assistant')->get();
@@ -36,35 +27,6 @@ class StaffController extends Controller
         $headers = ['Content-Type' => 'text/csv','content-disposition' => 'attachment'];
 
         return response(view('staff.groups_export',$data),200, $headers);
-    }
-
-    function getServers()
-    {
-        $data['servers'] = Server::orderBy('name')->with('group')->get();
-
-        return view('layout')->nest('page','staff.servers',$data);
-    }
-
-    function getServer(Server $server)
-    {
-        $server->refresh();
-
-        return view('layout')->nest('page','staff.server',['server' => $server]);
-    }
-
-    function getServerOn(Server $server)
-    {
-        $server->start();
-        $server->refresh();
-
-        return redirect()->back();
-    }
-
-    function getServerOff(Server $server)
-    {
-        $server->stop();
-
-        return redirect()->back();
     }
 
     function getStudents()
