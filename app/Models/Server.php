@@ -34,13 +34,21 @@ class Server extends Model
 
         $connector = new \App\Connectors\CloudStackConnector();
         $vm = $connector->get_virtual_machine_info($this->cloudstack_id);
-        if($vm == null)
-            return;
 
-        $this->name = $vm->name;
-        $this->state = $vm->state;
-        $this->memory = $vm->memory;
-        $this->ip_address = $vm->nic[0]->ipaddress;
+        if($vm == null)
+        {
+            $this->state = '?';
+            $this->memory = '?';
+            $this->ip_address = null;
+        }
+        else
+        {
+            $this->name = $vm->name;
+            $this->state = $vm->state;
+            $this->memory = $vm->memory;
+            $this->ip_address = $vm->nic[0]->ipaddress;
+        }
+
         $this->save();
     }
 

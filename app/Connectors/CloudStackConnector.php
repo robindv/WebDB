@@ -49,7 +49,7 @@ class CloudStackConnector
             "id"      => $vm_id
         ]);
 
-        if($response->listvirtualmachinesresponse->count != 1)
+        if(! isset($response->listvirtualmachinesresponse->virtualmachine))
             return null;
 
         return $response->listvirtualmachinesresponse->virtualmachine[0];
