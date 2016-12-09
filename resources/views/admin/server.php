@@ -29,9 +29,27 @@ if($server->created)
         echo '&nbsp;('.link_to('staff/server-off/'.$server->id,'Uitschakelen').')';
 
     echo '</span></div>';
+
+    echo '<h2>SSL Certificaat</h2>';
+
+    $ssl_info =  $server->ssl_info();
+    if($ssl_info == null)
+        echo '<p>SSL certificaat nog niet aangemaakt.</p>';
+    else
+    {
+        echo '<div class="container"><span class="col-sm-2" style="text-align:left;font-weight: bold;">Issuer</span>';
+        echo '<span class="col-sm-4">'.$ssl_info['issuer']['CN'].'</span></div>';
+        echo '<div class="container"><span class="col-sm-2" style="text-align:left;font-weight: bold;">Geldig vanaf</span>';
+        echo '<span class="col-sm-4">'.strftime("%d %b %Y %H:%M",$ssl_info['validFrom_time_t']).'</span></div>';
+        echo '<div class="container"><span class="col-sm-2" style="text-align:left;font-weight: bold;">Geldig tot</span>';
+        echo '<span class="col-sm-4">'.strftime("%d %b %Y %H:%M",$ssl_info['validTo_time_t']).'</span></div>';
+    }
+
+
 }
 else
     echo '<p>Deze server is nog niet aangemaakt.</p>';
+
 
 echo '<h2>Gebruikersaccounts</h2>';
 

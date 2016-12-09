@@ -106,4 +106,20 @@ class Server extends Model
         $connector->stop_virtual_machine($this->cloudstack_id);
         sleep(3);
     }
+
+    function ssl_info()
+    {
+        try{
+            $get = stream_context_create(array("ssl" => array("capture_peer_cert" => TRUE)));
+            $read = stream_socket_client("ssl://".$this->hostname.":443", $errno, $errstr, 30, STREAM_CLIENT_CONNECT, $get);
+            $cert = stream_context_get_params($read);
+            $certinfo = openssl_x509_parse($cert['options']['ssl']['peer_certificate']);
+        }
+        catch(\ErrorException $e)
+        {
+            return null;
+        }
+        
+        return $certinfo;
+    }
 }
