@@ -28,6 +28,6 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('webdb:states')->everyFiveMinutes()->withoutOverlapping();
-        $schedule->command('webdb:tasks')->everyMinute()->withoutOverlapping();
+//        $schedule->command('webdb:tasks')->everyMinute()->withoutOverlapping();
     }
 }

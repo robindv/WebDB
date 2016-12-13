@@ -17,12 +17,17 @@ class StaffController extends Controller
     {
         $data['groups'] = Group::orderBy('id')->with('students','students.user','project','assistant')->get();
 
+        if(! \Auth::user()->is_teacher)
+            $data['groups'] = $data['groups']->where('assistant_id', \Auth::id());
+
         return view('layout')->nest('page','staff.groups',$data);
     }
 
     function getGroupsExport()
     {
         $data['groups'] = Group::orderBy('id')->with('students','students.user','project','assistant')->get();
+        if(! \Auth::user()->is_teacher)
+            $data['groups'] = $data['groups']->where('assistant_id', \Auth::id());
 
         $headers = ['Content-Type' => 'text/csv','content-disposition' => 'attachment'];
 
@@ -32,12 +37,17 @@ class StaffController extends Controller
     function getStudents()
     {
         $data['users'] = User::with('student','student.group')->orderBy('lastname')->get();
+        if(! \Auth::user()->is_teacher)
+            $data['users'] = $data['users']->where('student.group.assistant_id', \Auth::id());
+
         return view('layout')->nest('page','staff.students',$data);
     }
 
     function getStudentsExport()
     {
         $data['users'] = User::with('student','student.group')->orderBy('lastname')->get();
+        if(! \Auth::user()->is_teacher)
+            $data['users'] = $data['users']->where('student.group.assistant_id', \Auth::id());
 
         $headers = ['Content-Type' => 'text/csv','content-disposition' => 'attachment'];
 

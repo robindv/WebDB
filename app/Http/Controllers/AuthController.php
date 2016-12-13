@@ -38,7 +38,7 @@ class AuthController extends Controller
                return redirect('login-failed');
         }
 
-        return redirect('/');     
+        return redirect('/');
     }
 
     function getLoginFailed()
@@ -49,6 +49,7 @@ class AuthController extends Controller
     public function getLogout()
     {
         Auth::logout();
-        return redirect(env('IVO_URL')."/logout");
+
+        return redirect(env('CAS_URL')."/logout");
     }
 }

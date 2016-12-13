@@ -92,8 +92,8 @@ else
     foreach($server->tasks as $task)
     {
         echo '<tr><td>'.$task->created_at.'</td>';
-        echo '<td>'.$task->action.'</td>';
-        echo '<td>'.$task->status.'</td>';
+        echo '<td>'.\App\Models\ServerTask::$actions[$task->action].'</td>';
+        echo '<td>'.\App\Models\ServerTask::$states[$task->status].'</td>';
         echo '<td>'.$task->updated_at.'</td>';
         echo '</tr>';
     }

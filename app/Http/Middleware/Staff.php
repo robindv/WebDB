@@ -15,7 +15,10 @@ class Staff
      */
     public function handle($request, Closure $next)
     {
-        if(!Auth::id() || !Auth::user()->is_assistant || !Auth::user()->is_teacher)
+        if(!Auth::id())
+            return redirect('/');
+
+        if(!Auth::user()->is_assistant && !Auth::user()->is_teacher)
            return redirect('/');
 
         return $next($request);
