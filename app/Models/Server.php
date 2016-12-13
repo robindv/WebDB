@@ -89,6 +89,16 @@ class Server extends Model
 
     }
 
+    function destroy_server()
+    {
+        if($this->cloudstack_id == null)
+            return;
+        $connector = new \App\Connectors\CloudStackConnector();
+        $connector->destroy_virtual_machine($this->cloudstack_id);
+        $this->cloudstack_id = null;
+        $this->save();
+    }
+
     function start()
     {
         if($this->cloudstack_id == null)
@@ -119,7 +129,7 @@ class Server extends Model
         {
             return null;
         }
-        
+
         return $certinfo;
     }
 }

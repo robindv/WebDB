@@ -123,4 +123,13 @@ class CloudStackConnector
         ]);
     }
 
+    function destroy_virtual_machine($id)
+    {
+        return $this->do_get_request([
+            "command" => "destroyVirtualMachine",
+            "id"      => $id,
+            "expunge"    => true,
+        ]);
+    }
+
 }
