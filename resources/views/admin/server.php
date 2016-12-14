@@ -32,17 +32,16 @@ if($server->created)
 
     echo '<h2>SSL Certificaat</h2>';
 
-    $ssl_info =  $server->ssl_info();
-    if($ssl_info == null)
+    if($server->ssl_issuer == null)
         echo '<p>SSL certificaat nog niet aangemaakt.</p>';
     else
     {
         echo '<div class="container"><span class="col-sm-2" style="text-align:left;font-weight: bold;">Issuer</span>';
-        echo '<span class="col-sm-4">'.$ssl_info['issuer']['CN'].'</span></div>';
+        echo '<span class="col-sm-4">'.$server->ssl_issuer.'</span></div>';
         echo '<div class="container"><span class="col-sm-2" style="text-align:left;font-weight: bold;">Geldig vanaf</span>';
-        echo '<span class="col-sm-4">'.strftime("%d %b %Y %H:%M",$ssl_info['validFrom_time_t']).'</span></div>';
+        echo '<span class="col-sm-4">'.strftime("%d %b %Y %H:%M", $server->ssl_valid_from->timestamp).'</span></div>';
         echo '<div class="container"><span class="col-sm-2" style="text-align:left;font-weight: bold;">Geldig tot</span>';
-        echo '<span class="col-sm-4">'.strftime("%d %b %Y %H:%M",$ssl_info['validTo_time_t']).'</span></div>';
+        echo '<span class="col-sm-4">'.strftime("%d %b %Y %H:%M", $server->ssl_valid_to->timestamp).'</span></div>';
     }
 
 

@@ -3,10 +3,12 @@
 namespace App\Models;
 
 
-use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
-class Server extends Model
+class Server extends \Eloquent
 {
+    public $dates = ['ssl_valid_from', 'ssl_valid_to'];
+
     function group()
     {
         return $this->belongsTo('App\Models\Group');
@@ -117,19 +119,28 @@ class Server extends Model
         sleep(3);
     }
 
-    function ssl_info()
+    function refresh_ssl_info()
     {
         try{
             $get = stream_context_create(array("ssl" => array("capture_peer_cert" => TRUE)));
             $read = stream_socket_client("ssl://".$this->hostname.":443", $errno, $errstr, 30, STREAM_CLIENT_CONNECT, $get);
             $cert = stream_context_get_params($read);
             $certinfo = openssl_x509_parse($cert['options']['ssl']['peer_certificate']);
+
+            $this->ssl_issuer = $certinfo['issuer']['CN'];
+            $this->ssl_valid_from = Carbon::createFromTimestampUTC($certinfo['validFrom_time_t']);
+            $this->ssl_valid_to = Carbon::createFromTimestampUTC($certinfo['validTo_time_t']);
+            $this->save();
+            return;
         }
         catch(\ErrorException $e)
         {
-            return null;
+            $this->ssl_issuer = null;
+            $this->ssl_valid_from = null;
+            $this->ssl_valid_to = null;
+            $this->save();
+            return;
         }
 
-        return $certinfo;
     }
 }

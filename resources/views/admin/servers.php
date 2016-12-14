@@ -39,9 +39,14 @@ if($servers)
             echo '<td><span class="glyphicon glyphicon-remove"></span>';
 
         if($server->configured)
-            echo '<span class="glyphicon glyphicon-ok"></span></td>';
+            echo ' <span class="glyphicon glyphicon-ok"></span>';
         else
-            echo '<span class="glyphicon glyphicon-remove"></span></td>';
+            echo ' <span class="glyphicon glyphicon-remove"></span>';
+
+        if($server->ssl_issuer)
+            echo ' <span class="glyphicon glyphicon-lock"></span></td>';
+        else
+            echo ' <span class="glyphicon glyphicon-remove"></span></td>';
 
         if($server->memory)
             echo '<td>'.$server->memory.' MiB</td>';
