@@ -75,6 +75,6 @@ class User extends Model implements Authenticatable
 
     public function scopeIsAssistant($query)
     {
-        return $query->where('role','&', $this->assistant_role);
+        return $query->where('role','&', self::assistant_role);
     }
 }
