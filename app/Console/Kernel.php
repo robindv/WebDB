@@ -17,6 +17,7 @@ class Kernel extends ConsoleKernel
         Commands\ServerTasks::class,
         Commands\ServerUsers::class,
         Commands\ServerSSLCertificates::class,
+        Commands\ReadStudents::class,
         Commands\Tools::class
     ];
 
