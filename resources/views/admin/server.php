@@ -24,9 +24,9 @@ if($server->created)
     echo '<span class="col-sm-4">'.$server->state;
 
     if($server->state == 'Stopped')
-        echo '&nbsp;('.link_to('staff/server-on/'.$server->id,'Aanzetten').')';
+        echo '&nbsp;('.link_to('admin/server-on/'.$server->id,'Aanzetten').')';
     if($server->state == 'Running')
-        echo '&nbsp;('.link_to('staff/server-off/'.$server->id,'Uitschakelen').')';
+        echo '&nbsp;('.link_to('admin/server-off/'.$server->id,'Uitschakelen').')';
 
     echo '</span></div>';
 
