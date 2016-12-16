@@ -15,4 +15,9 @@ class Student extends Model
     {
         return $this->belongsTo('App\Models\Group');
     }
+
+    function tutor()
+    {
+        return $this->belongsTo('App\Models\User');
+    }
 }

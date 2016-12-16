@@ -56,7 +56,7 @@ class ReadStudents extends Command
         if(count($header_line) < 6)
             return $this->error("Invalid CSV file (2)");
 
-        $mapping = ['UvAnetID' => -1, 'LastName' => -1, 'MiddleName' => -1, 'FirstName' => -1, 'Email' => -1, 'Programme' => -1, 'Groep' => -1];
+        $mapping = ['UvAnetID' => -1, 'LastName' => -1, 'MiddleName' => -1, 'FirstName' => -1, 'Email' => -1, 'Programme' => -1, 'Groep' => -1, 'Tutor' => -1];
 
         foreach($header_line as $key=>$value)
             if(array_key_exists($value, $mapping))
@@ -76,7 +76,7 @@ class ReadStudents extends Command
             $group = Group::where('name', $groupname)->first();
             if($group == null)
             {
-                $this->info('Group '.$groupname.' does not exists: '. $uvanetid);
+                $this->info('Group '.$groupname.' does not exists');
             }
 
             $user = User::where('uvanetid', $uvanetid)->first();
@@ -122,6 +122,13 @@ class ReadStudents extends Command
                 $student->group_id = $group->id;
                 $student->active   = 1;
             }
+
+            /* Tutor */
+            $tutor = User::whereRaw("CONCAT(firstname,' ',TRIM(CONCAT(infix,' ',lastname))) = ?",[$line[$mapping['Tutor']]])->first();
+
+            if($tutor == null)
+                $this->info('Tutor not found: '. $line[$mapping['Tutor']]);
+            $student->tutor_id = $tutor == null ? null : $tutor->id;
 
             $student->save();
         }
