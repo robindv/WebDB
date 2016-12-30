@@ -128,8 +128,8 @@ class Server extends \Eloquent
             $certinfo = openssl_x509_parse($cert['options']['ssl']['peer_certificate']);
 
             $this->ssl_issuer = $certinfo['issuer']['CN'];
-            $this->ssl_valid_from = Carbon::createFromTimestampUTC($certinfo['validFrom_time_t']);
-            $this->ssl_valid_to = Carbon::createFromTimestampUTC($certinfo['validTo_time_t']);
+            $this->ssl_valid_from = Carbon::createFromTimestampUTC($certinfo['validFrom_time_t'])->timezone('Europe/Amsterdam');
+            $this->ssl_valid_to = Carbon::createFromTimestampUTC($certinfo['validTo_time_t'])->timezone('Europe/Amsterdam');
             $this->save();
             return;
         }
