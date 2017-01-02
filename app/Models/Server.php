@@ -56,6 +56,9 @@ class Server extends \Eloquent
 
     function getHostnameAttribute()
     {
+        if($this->ip_address == env("WEBDB_EXAMPLES_IP"))
+            return env('WEBDB_EXAMPLES');
+
         $ip = explode(".", $this->ip_address);
         if(count($ip) != 4)
             return "";
