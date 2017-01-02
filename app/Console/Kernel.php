@@ -13,6 +13,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
+        Commands\GitLabTasks::class,
         Commands\ServerStates::class,
         Commands\ServerTasks::class,
         Commands\ServerUsers::class,

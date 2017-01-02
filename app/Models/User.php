@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Connectors\GitLabConnector;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 
@@ -76,5 +77,13 @@ class User extends Model implements Authenticatable
     public function scopeIsAssistant($query)
     {
         return $query->where('role','&', self::assistant_role);
+    }
+
+    public function gitlab_user(GitLabConnector $connector)
+    {
+        if($this->gitlab_user_id == null)
+            return null;
+
+        return $connector->find_user_by_id($this->gitlab_user_id);
     }
 }

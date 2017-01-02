@@ -54,6 +54,48 @@ class GitLabConnector
         return $group;
     }
 
+    function find_user_by_id($id)
+    {
+        $result = $this->do_request("GET", ["users", $id], []);
+
+        if (!isset($result->id))
+            return null;
+
+        return $this->result_to_user($result);
+    }
+
+    function find_user_by_username($username)
+    {
+        $result = $this->do_request("GET", ["users"], ["username" => $username]);
+
+        if (! count($result))
+            return null;
+
+        return $this->result_to_user($result[0]);
+    }
+
+    function find_user_by_string($search)
+    {
+        $result = $this->do_request("GET", ["users"], ["search" => $search]);
+
+        if (! count($result))
+            return null;
+
+        return $this->result_to_user($result[0]);
+    }
+
+
+    private function result_to_user($result)
+    {
+        $user = new GitlabUser($this);
+        $user->id = $result->id;
+        $user->name = $result->name;
+        $user->email = $result->email;
+        $user->username = $result->username;
+
+        return $user;
+    }
+
     function find_group_by_string($search)
     {
         $result = $this->do_request("GET",["groups"], ['search'=>$search]);
@@ -96,6 +138,28 @@ class GitLabConnector
         return;
     }
 
+    function save_user(GitLabUser $user)
+    {
+        if($user->id == null)
+        {
+            $result = $this->do_request("POST", ["users"],
+                ['email' => $user->email,
+                 'password' => str_random(10),
+                 'username' => $user->username,
+                 'name' => $user->name,
+                 'projects_limit' => 10,
+                 'provider' => 'ivo',
+                 'extern_uid' => $user->username,
+                 'confirm' => "false"]
+            );
+
+            if(isset($result->id))
+            {
+                $user->id = $result->id;
+            }
+        }
+    }
+
 }
 
 
@@ -125,11 +189,18 @@ class GitLabUser {
 
     public $id;
     public $name;
+    public $username;
+    public $email;
     private $connector;
 
     function __construct(GitLabConnector $connector)
     {
         $this->connector = $connector;
+    }
+
+    function save()
+    {
+        $this->connector->save_user($this);
     }
 
 
