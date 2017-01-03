@@ -59,7 +59,7 @@ if($server->users->count() == 0)
 else
 {
     echo '<table>';
-    echo '<thead><tr><th>Naam</th><th>UvAnetID</th><th>Gebruikersnaam</th><th>Wachtwoord</th></tr></thead><tbody>';
+    echo '<thead><tr><th>Naam</th><th>UvAnetID</th><th>Gebruikersnaam</th><th>Wachtwoord</th><th>Staat</th></tr></thead><tbody>';
     foreach($server->users as $su)
     {
         echo '<tr>';
@@ -67,6 +67,7 @@ else
         echo '<td>'.$su->user->uvanetid.'</td>';
         echo '<td>'.$su->username.'</td>';
         echo '<td>'.$su->password.'</td>';
+        echo '<td>'.\App\Models\ServerUser::$states[$su->created].'</td>';
         echo '</tr>';
     }
     echo '</tbody></table>';

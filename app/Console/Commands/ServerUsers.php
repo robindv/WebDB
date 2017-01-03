@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\ServerUser;
 use Illuminate\Console\Command;
 use SSH;
 
@@ -49,53 +50,62 @@ class ServerUsers extends Command
      */
     public function handle()
     {
-        $this->info('Creating users..');
+        ServerUser::with('server','user')->where('created','=','0')->get()->each( [$this, "create_user"]);
+        ServerUser::with('server','user')->where('created','=','2')->get()->each( [$this, "delete_user"]);
 
-        $tasks = \App\Models\ServerUser::with('server','user')->where('created','=','0')->get();
+    }
 
-        if(!count($tasks))
+    function create_user(ServerUser $su)
+    {
+        if($su->server->state != 'Running' || ! $su->server->configured)
         {
-            echo $this->info('All users are created.');
+            $this->error($su->server->name .' not running/configured.');
             return;
         }
 
-        $i = 0;
-        foreach($tasks as $task)
-        {
-            if($task->server->state != 'Running')
-            {
-                $this->error($task->server->name .' not running.');
-                continue;
-            }
+        $su->password = $this->rand_string(14);
+        $su->username = $su->user->linux_name;
 
-            if($task->server->configured != '1')
-            {
-                $this->error($task->server->name .' not configured.');
-                continue;
-            }
-            $i++;
+        $commands = [];
+        $commands[] = "unset HISTFILE";
+        $commands[] = "useradd -g users -G sudo -s /bin/bash -m -p`mkpasswd ".$su->password."` ".$su->username;
+        $commands[] = 'export mp=`cat /etc/mysql/debian.cnf | grep -m 1 \'password\' | awk -F\'= \' \'{print $2}\'`';
+        $commands[] = 'mysql -u debian-sys-maint -p${mp}'." mysql -e \"CREATE USER '".$su->username."'@'localhost' IDENTIFIED BY '".$su->password."'; GRANT ALL PRIVILEGES ON *.* TO '".$su->username."'@'localhost' WITH GRANT OPTION; FLUSH PRIVILEGES\"";
+        $commands[] = "mkdir /home/".$su->username."/public_html";
+        $commands[] = "chmod +x /home/".$su->username."/public_html";
+        $commands[] = "echo 'Dit bestand staat in je <u>public_html</u> directory!' > /home/".$su->username."/public_html/test.html";
+        $commands[] = "chown -R ".$su->username.":users /home/".$su->username."/public_html";
+        $commands[] = "chmod g-w /home/".$su->username;
 
-            /* Generate a password */
-            $task->password = $this->rand_string(14);
-            $task->username = $task->user->linux_name;
+        SSH::into($su->server->name)->run($commands);
 
-            /* Connect to the server */
-            $commands = [];
-            $commands[] = "unset HISTFILE";
-            $commands[] = "useradd -g users -G sudo -s /bin/bash -m -p`mkpasswd ".$task->password."` ".$task->username;
-            $commands[] = 'export mp=`cat /etc/mysql/debian.cnf | grep -m 1 \'password\' | awk -F\'= \' \'{print $2}\'`';
-            $commands[] = 'mysql -u debian-sys-maint -p${mp}'." mysql -e \"CREATE USER '".$task->username."'@'localhost' IDENTIFIED BY '".$task->password."'; GRANT ALL PRIVILEGES ON *.* TO '".$task->username."'@'localhost' WITH GRANT OPTION; FLUSH PRIVILEGES\"";
-            $commands[] = "mkdir /home/".$task->username."/public_html";
-            $commands[] = "chmod +x /home/".$task->username."/public_html";
-            $commands[] = "echo 'Dit bestand staat in je <u>public_html</u> directory!' > /home/".$task->username."/public_html/test.html";
-            $commands[] = "chown -R ".$task->username.":users /home/".$task->username."/public_html";
-            $commands[] = "chmod g-w /home/".$task->username;
+        $su->created = 1;
+        $su->save();
 
-            $r = SSH::into($task->server->name)->run($commands);
+        $this->info("Created a user for ".$su->user->name ." on ".$su->server->hostname);
 
-            /* Done, set completed to 1 */
-            $task->created = 1;
-            $task->save();
-        }
     }
+
+    function delete_user(ServerUser $su)
+    {
+        if($su->server->state != 'Running' || ! $su->server->configured)
+        {
+            $this->error($su->server->name .' not running/configured.');
+            return;
+        }
+
+        $commands = [];
+        $commands[] = "unset HISTFILE";
+        $commands[] = 'export mp=`cat /etc/mysql/debian.cnf | grep -m 1 \'password\' | awk -F\'= \' \'{print $2}\'`';
+        $commands[] = 'mysql -u debian-sys-maint -p${mp}'." mysql -e \"DROP USER '".$su->username."'@'localhost'; FLUSH PRIVILEGES\"";
+        $commands[] = "deluser --remove-home ".$su->username;
+
+        SSH::into($su->server->name)->run($commands);
+
+        $su->created = 3;
+        $su->save();
+
+        $this->info("Deleted ".$su->user->name ." from ".$su->server->hostname);
+    }
+
 }
