@@ -51,6 +51,7 @@ class GitLabConnector
         $group = new GitLabGroup($this);
         $group->id = $result->id;
         $group->name = $result->name;
+        $group->path = $result->path;
         return $group;
     }
 
@@ -108,6 +109,7 @@ class GitLabConnector
         $group = new GitLabGroup($this);
         $group->id = $result->id;
         $group->name = $result->name;
+        $group->path = $result->path;
         return $group;
     }
 
@@ -167,6 +169,7 @@ class GitLabGroup {
 
     public $id;
     public $name;
+    public $path;
     private $connector;
 
     function __construct(GitLabConnector $connector)

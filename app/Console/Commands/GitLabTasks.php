@@ -2,7 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Connectors\GitLabConnector;
 use App\Connectors\GitLabUser;
+use App\Models\Group;
 use App\Models\User;
 use Illuminate\Console\Command;
 
@@ -43,20 +45,23 @@ class GitLabTasks extends Command
 
         switch($command)
         {
-            case "find":
+            case "find_accounts":
                 $this->find_accounts();
                 break;
-            case "create":
+            case "create_accounts":
                 $this->create_accounts();
+                break;
+            case "find_create_groups":
+                $this->find_create_groups();
                 break;
         }
     }
 
     private function find_accounts()
     {
-        $connector = new \App\Connectors\GitLabConnector();
+        $connector = new GitLabConnector();
 
-        $users = \App\Models\User::whereNull('gitlab_user_id')->where('role','&', User::student_role)->get();
+        $users = User::whereNull('gitlab_user_id')->where('role','&', User::student_role)->get();
 
         foreach($users as $user)
         {
@@ -76,9 +81,9 @@ class GitLabTasks extends Command
 
     private function create_accounts()
     {
-        $connector = new \App\Connectors\GitLabConnector();
+        $connector = new GitLabConnector();
 
-        $users = \App\Models\User::whereNull('gitlab_user_id')->where('role','&', User::student_role)->get();
+        $users = User::whereNull('gitlab_user_id')->where('role','&', User::student_role)->get();
         foreach($users as $user)
         {
             $gu = new GitLabUser($connector);
@@ -92,8 +97,30 @@ class GitLabTasks extends Command
 
             $this->info("Created ". $user->name ." (".$user->uvanetid.")");
         }
+    }
 
+    private function find_create_groups()
+    {
+        $connector = new GitLabConnector();
 
+        $groups = Group::whereNull('gitlab_group_id')->get();
 
+        foreach($groups as $group)
+        {
+            $gg = $connector->find_group_by_string($group->fullname);
+
+            if($gg == null)
+            {
+                $this->info("No match for ". $group->fullname);
+
+                $gg = $group->create_gitlab_group($connector);
+                $this->info("Created a new group with id ".$gg->id);
+                continue;
+            }
+
+            $this->info("Found ".$gg->name);
+            $group->gitlab_group_id = $gg->id;
+            $group->save();
+        }
     }
 }
