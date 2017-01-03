@@ -3,8 +3,10 @@
 namespace App\Console\Commands;
 
 use App\Connectors\GitLabConnector;
+use App\Connectors\GitLabGroup;
 use App\Connectors\GitLabUser;
 use App\Models\Group;
+use App\Models\Student;
 use App\Models\User;
 use Illuminate\Console\Command;
 
@@ -56,6 +58,9 @@ class GitLabTasks extends Command
                 break;
             case "add_assistants_to_groups":
                 $this->add_assistants_to_groups();
+                break;
+            case "add_students_to_groups":
+                $this->add_students_to_groups();
                 break;
         }
     }
@@ -161,5 +166,41 @@ class GitLabTasks extends Command
             $this->info($group->assistant->name." already member of group ".$gg->name);
         }
 
+    }
+
+    private function add_students_to_groups()
+    {
+        $connector = new GitLabConnector();
+
+        $groups = Group::whereNotNull('gitlab_group_id')->where('id',99)->get();
+
+        /** @var Group[] $groups */
+        foreach($groups as $group)
+        {
+            if($group->gitlab_group_id == null)
+            {
+                $this->info("Group ".$group->name." not created in GitLab");
+                continue;
+            }
+
+            $gg = $group->gitlab_group($connector);
+            $members = $gg->member_user_ids();
+
+            foreach($group->students as $student)
+            {
+                if($student->user->gitlab_user_id == null)
+                {
+                    $this->info("Student not created in GitLab: ".$student->user->name);
+                    continue;
+                }
+
+                if(in_array($student->user->gitlab_user_id, $members))
+                    continue;
+
+                $gg->add_member($student->user->gitlab_user_id, 40);
+
+                $this->info("Added ".$student->user->name." to group ". $gg->name);
+            }
+        }
     }
 }
