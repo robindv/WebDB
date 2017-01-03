@@ -54,6 +54,9 @@ class GitLabTasks extends Command
             case "find_create_groups":
                 $this->find_create_groups();
                 break;
+            case "add_assistants_to_groups":
+                $this->add_assistants_to_groups();
+                break;
         }
     }
 
@@ -122,5 +125,41 @@ class GitLabTasks extends Command
             $group->gitlab_group_id = $gg->id;
             $group->save();
         }
+    }
+
+    private function add_assistants_to_groups()
+    {
+        $connector = new GitLabConnector();
+
+        $groups = Group::whereNotNull('gitlab_group_id')->get();
+
+        foreach($groups as $group)
+        {
+
+            if($group->assistant_id == null)
+            {
+                $this->info($group->name . ": assistant unknown");
+                continue;
+            }
+
+            if($group->assistant->gitlab_user_id == null)
+            {
+                $this->info($group->name . ": assistant has no gitlab account");
+                continue;
+            }
+
+            $gg = $group->gitlab_group($connector);
+
+            if(! in_array($group->assistant->gitlab_user_id, $gg->member_user_ids()))
+            {
+                $gg->add_member($group->assistant->gitlab_user_id, 20);
+
+                $this->info("Added ".$group->assistant->name." as a reporter to ".$gg->name);
+                continue;
+            }
+
+            $this->info($group->assistant->name." already member of group ".$gg->name);
+        }
+
     }
 }

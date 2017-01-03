@@ -162,6 +162,18 @@ class GitLabConnector
         }
     }
 
+    function get_member_user_ids_from_group($group_id)
+    {
+        $result = $this->do_request("GET", ["groups", $group_id, "members"], []);
+
+        return array_map(function($e) { return $e->id; }, $result);
+    }
+
+    function add_member_to_group($user_id, $group_id, $access_level)
+    {
+        $this->do_request("POST", ["groups", $group_id, "members"], ["user_id" => $user_id, "access_level" => $access_level]);
+    }
+
 }
 
 
@@ -185,6 +197,16 @@ class GitLabGroup {
     function remove_user($user_id)
     {
         $this->connector->remove_user_from_group($this->id, $user_id);
+    }
+
+    function member_user_ids()
+    {
+        return $this->connector->get_member_user_ids_from_group($this->id);
+    }
+
+    function add_member($user_id, $access_level)
+    {
+        $this->connector->add_member_to_group($user_id, $this->id, $access_level);
     }
 }
 
