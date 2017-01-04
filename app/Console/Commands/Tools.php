@@ -51,9 +51,6 @@ class Tools extends Command
             case 'linux-users':
                 $this->linux_users();
                 break;
-            case 'create-tasks':
-                $this->create_tasks();
-                break;
             case 'double-linux-names':
                 $this->double_linux_names();
                 break;
