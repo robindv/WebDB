@@ -82,7 +82,7 @@ class ServerUsers extends Command
         $su->created = 1;
         $su->save();
 
-        $this->info("Created a user for ".$su->user->name ." on ".$su->server->hostname);
+        $this->info("Created a user for ".$su->user->name ." on ".$su->server->hostname ." (".$su->server->name.")");
 
     }
 

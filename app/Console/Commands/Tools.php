@@ -63,7 +63,7 @@ class Tools extends Command
     function linux_users()
     {
         /* For all groups.. */
-        foreach(Group::all() as $group)
+        foreach(Group::where('name','LIKE','in%')->get() as $group)
         {
             if(!$group->server->created)
                 continue;
@@ -103,26 +103,6 @@ class Tools extends Command
         }
     }
 
-    function create_tasks()
-    {
-        for($i = 6; $i <= 49; $i++)
-        {
-            $t = new ServerTask();
-            $t->server_id = $i;
-            $t->action = "create";
-            $t->save();
-
-            $t = new ServerTask();
-            $t->server_id = $i;
-            $t->action = "start";
-            $t->save();
-
-            $t = new ServerTask();
-            $t->server_id = $i;
-            $t->action = "configure";
-            $t->save();
-        }
-    }
 
     function linux_names()
     {

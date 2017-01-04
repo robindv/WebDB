@@ -172,7 +172,7 @@ class GitLabTasks extends Command
     {
         $connector = new GitLabConnector();
 
-        $groups = Group::whereNotNull('gitlab_group_id')->where('id',99)->get();
+        $groups = Group::whereNotNull('gitlab_group_id')->where('name','LIKE','in%')->get();
 
         /** @var Group[] $groups */
         foreach($groups as $group)
