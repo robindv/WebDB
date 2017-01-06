@@ -42,7 +42,7 @@
         {
             $user = Auth::user();
 
-            if($user->is_student())
+            if($user->is_student)
             {
                 echo '<li>'.link_to('student/project','Project').'</li>';
                 echo '<li>'.link_to('student/server','Server').'</li>';

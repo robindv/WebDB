@@ -59,6 +59,11 @@ class User extends Model implements Authenticatable
         return $this->role & self::teacher_role;
     }
 
+    public function getIsStudentAttribute()
+    {
+        return $this->role & self::student_role;
+    }
+
     public function is_student()
     {
         return $this->student != NULL;

@@ -60,7 +60,7 @@ class Tools extends Command
     function linux_users()
     {
         /* For all groups.. */
-        foreach(Group::where('name','LIKE','in%')->get() as $group)
+        foreach(Group::get() as $group)
         {
             if(!$group->server->created)
                 continue;

@@ -112,6 +112,8 @@ class ReadStudents extends Command
 
             $student->programme = $line[$mapping['Programme']];
 
+            $old_group = $student->group_id;
+            $old_active = $student->active;
             if($group == null)
             {
                 $student->group_id = null;
@@ -122,6 +124,11 @@ class ReadStudents extends Command
                 $student->group_id = $group->id;
                 $student->active   = 1;
             }
+
+            if($old_group != $student->group_id)
+                $this->warn("Changing group of ". $student->user->name);
+            if($old_active != $student->active)
+                $this->info("Changing active status of ". $student->user->name);
 
             /* Tutor */
             $tutor = User::whereRaw("CONCAT(firstname,' ',TRIM(CONCAT(infix,' ',lastname))) = ?",[$line[$mapping['Tutor']]])->first();
