@@ -13,6 +13,9 @@ class SSHServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        if(! \Schema::hasTable("servers"))
+            return;
+
         $connections = [];
         foreach(\App\Models\Server::whereNotNull('cloudstack_id')->get() as $server)
         {
