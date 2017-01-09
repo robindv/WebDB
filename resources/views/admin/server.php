@@ -30,6 +30,12 @@ if($server->created)
 
     echo '</span></div>';
 
+    if($server->group)
+    {
+        echo '<div class="container"><span class="col-sm-2" style="text-align:left;font-weight: bold;">Groep</span>';
+        echo '<span class="col-sm-4">'.$server->group->name.'</span></div>';
+    }
+
     echo '<h2>SSL Certificaat</h2>';
 
     if($server->ssl_issuer == null)

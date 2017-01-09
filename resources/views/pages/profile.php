@@ -35,11 +35,15 @@ if (!count($passwords))
 else
 {
     echo '<table>';
-    echo '<thead><tr><th>Server</th><th>Gebruikersnaam</th><th>Wachtwoord</th></tr></thead><tbody>';
+    echo '<thead><tr><th>Server</th><th>Groep</th><th>Gebruikersnaam</th><th>Wachtwoord</th></tr></thead><tbody>';
     foreach($passwords as $password)
     {
         echo '<tr>';
         echo '<td>'.$password->server->hostname.'</td>';
+        if($password->server->group)
+            echo '<td>'.$password->server->group->name.'</td>';
+        else
+            echo '<td>-</td>';
         echo '<td>'.$password->username.'</td>';
         echo '<td>'.$password->password.'</td>';
         echo '</tr>';
