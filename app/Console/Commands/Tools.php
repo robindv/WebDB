@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Group;
+use App\Models\Server;
 use App\Models\ServerTask;
 use App\Models\ServerUser;
 use App\Models\User;
@@ -54,6 +55,11 @@ class Tools extends Command
             case 'double-linux-names':
                 $this->double_linux_names();
                 break;
+            case "cleanup":
+                $this->cleanup();
+                break;
+            default:
+                $this->warn("Unknown command ".$command);
         }
     }
 
@@ -132,6 +138,38 @@ class Tools extends Command
                 else
                     echo "Group ".$group->name. " has multiple users with name ". $student->user->linux_name.".\n";
             }
+        }
+    }
+
+    private function cleanup()
+    {
+
+        $servers = Server::get();
+
+        /** @var Server[] $servers */
+        foreach($servers as $server)
+        {
+            if($server->group_id == null)
+                continue;
+
+            $susers = $server->users()->where('created',1)->pluck('user_id')->all();
+
+            $ids = $server->group->students->pluck('user_id')->all();
+            if($server->group->assistant_id != null)
+                $ids[] = $server->group->assistant_id;
+
+
+            foreach(array_diff($susers, $ids) as $uid)
+            {
+                $user = User::find($uid);;
+                if($this->confirm("Do you want to remove ".$user->name." from ".$server->name."?"))
+                {
+                    $su = ServerUser::where('user_id',$uid)->where('server_id',$server->id)->first();
+                    $su->created = 2;
+                    $su->save();
+                }
+            }
+
         }
     }
 }
