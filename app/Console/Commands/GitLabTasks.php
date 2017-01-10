@@ -62,6 +62,11 @@ class GitLabTasks extends Command
             case "add_students_to_groups":
                 $this->add_students_to_groups();
                 break;
+            case "cleanup":
+                $this->cleanup();
+                break;
+            default:
+                $this->warn("Unknown command ".$command);
         }
     }
 
@@ -201,6 +206,36 @@ class GitLabTasks extends Command
 
                 $this->info("Added ".$student->user->name." to group ". $gg->name);
             }
+        }
+    }
+
+    private function cleanup()
+    {
+        $connector = new GitLabConnector();
+
+        $groups = Group::whereNotNull('gitlab_group_id')->get();
+
+        /** @var Group[] $groups */
+        foreach($groups as $group)
+        {
+            $gg = $group->gitlab_group($connector);
+            $members = $gg->member_user_ids();
+
+            $gids = $group->students->map(function($s) { return $s->user->gitlab_user_id; })->all();
+            if($group->assistant_id != null)
+                $gids[] = $group->assistant->gitlab_user_id;
+
+
+            foreach(array_diff($members, $gids) as $gid)
+            {
+                $guser = $connector->find_user_by_id($gid);
+                if($this->confirm("Do you want to remove ".$guser->name." from ".$gg->name."?"))
+                {
+                    $this->warn("Removing ".$guser->name);
+                    $gg->remove_user($guser->id);
+                }
+            }
+
         }
     }
 }
