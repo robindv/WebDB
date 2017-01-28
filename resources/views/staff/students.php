@@ -33,7 +33,7 @@ if($users)
         echo '<td>'.link_to('mailto:'.$user->email,$user->name).'</td>';
         echo '<td>'.$user->student->programme.'</td>';
         echo '<td>'.($user->student->tutor ? link_to('mailto:'.$user->student->tutor->email,$user->student->tutor->name) : '&nbsp;').'</td>';
-        echo '<td>'.($user->student->remark ? $user->student->remark : "&nbsp;").'</td>';
+        echo '<td>'.($user->student->remark ? nl2br($user->student->remark) : "&nbsp;").'</td>';
 
         if($user->student->group)
             echo '<td>'.link_to('staff/groups#'.$user->student->group_id,$user->student->group->name).'</a></td>';

@@ -58,8 +58,47 @@ class Tools extends Command
             case "cleanup":
                 $this->cleanup();
                 break;
+            case "enable-ftp":
+                $this->enable_ftp();
+                break;
             default:
                 $this->warn("Unknown command ".$command);
+        }
+    }
+
+    function enable_ftp()
+    {
+
+        foreach(Server::where('state', 'running')->where('id',64)->get() as $server)
+        {
+
+            $ftp_configuration = [
+                "# webdb changes",
+                "write_enable=YES",
+                "local_umask=002",
+                "rsa_cert_file=/etc/letsencrypt/live/".$server->hostname."/fullchain.pem",
+                "rsa_private_key_file=/etc/letsencrypt/live/".$server->hostname."/privkey.pem",
+                "ssl_enable=YES",
+                "allow_anon_ssl=NO",
+                "force_local_data_ssl=YES",
+                "force_local_logins_ssl=YES",
+                "ssl_tlsv1=YES",
+                "ssl_sslv2=NO",
+                "ssl_sslv3=NO",
+                "require_ssl_reuse=NO",
+                "ssl_ciphers=HIGH"];
+            $ftp_configuration = implode('\n', $ftp_configuration);
+
+
+            $commands = [];
+            $commands[] = "unset HISTFILE";
+            $commands[] = "apt-get install -y vsftpd";
+            $commands[] = 'echo -e "'.$ftp_configuration.'" >> /etc/vsftpd.conf';
+            $commands[] = "systemctl restart vsftpd";
+
+
+            \SSH::into($server->name)->run($commands);
+
         }
     }
 
