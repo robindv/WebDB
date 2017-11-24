@@ -4,6 +4,10 @@ echo '<h2>Configuratie</h2>';
 
 echo Form::open(['id'=>'modal_form','class'=>'form-horizontal']);
 
+$app = app();
+
+echo Form::b_static("Laravel", $app::VERSION);
+
 echo Form::b_dropdown($errors, 'cloudstack_zoneid', 'Zone', $zones, $current_zoneid, 3);
 echo Form::b_dropdown($errors, 'cloudstack_networkid', 'Netwerk', $networks, $current_networkid, 6);
 echo Form::b_dropdown($errors, 'cloudstack_serviceofferingid', 'Service offering', $serviceofferings, $current_serviceofferingid, 6);

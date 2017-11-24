@@ -16,7 +16,7 @@ class User extends Model implements Authenticatable
 
     public function getAuthIdentifierName()
     {
-        return $this->uvanetid;
+        return 'id';
     }
 
     public function getAuthIdentifier()
