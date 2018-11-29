@@ -144,7 +144,7 @@ class ServerTasks extends Command
         }
 
         /* Make sure the server is up and running */
-        if($server->state != 'Running')
+        if($server->state != 'Running' && $server->provider->type != 'openstack')
         {
             $this->error($server->name.' is not running.');
             return;
@@ -171,10 +171,12 @@ class ServerTasks extends Command
         /* Apache */
         $commands[] = "sed -i 's/hostname/".$hostname."/g' /etc/apache2/sites-available/webdb.conf";
 
-        /* MySQL */
-        $commands[] = 'export mp=`cat /etc/mysql/debian.cnf | grep -m 1 \'password\' | awk -F\'= \' \'{print $2}\'`';
-        $commands[] = 'mysql -u debian-sys-maint -p${mp}'." mysql -e \"SET PASSWORD FOR 'debian-sys-maint'@'localhost' = PASSWORD('".$mysql_debian_pass."');FLUSH PRIVILEGES\"";
-        $commands[] = 'sed -i "s/${mp}/'.$mysql_debian_pass.'/g" /etc/mysql/debian.cnf';
+        if($server->provider->type == 'cloudstack') {
+            /* MySQL */
+            $commands[] = 'export mp=`cat /etc/mysql/debian.cnf | grep -m 1 \'password\' | awk -F\'= \' \'{print $2}\'`';
+            $commands[] = 'mysql -u debian-sys-maint -p${mp}' . " mysql -e \"SET PASSWORD FOR 'debian-sys-maint'@'localhost' = PASSWORD('" . $mysql_debian_pass . "');FLUSH PRIVILEGES\"";
+            $commands[] = 'sed -i "s/${mp}/' . $mysql_debian_pass . '/g" /etc/mysql/debian.cnf';
+        }
 
         /* Security fixes */
         $commands[] = "passwd --lock root";
@@ -188,10 +190,19 @@ class ServerTasks extends Command
         $commands[] = "cat /dev/null > /var/log/apache2/error.log";
 
         $commands[] = "rm -f /root/.viminfo";
+        $commands[] = "rm -f /root/.vim/.netrwhist";
         $commands[] = "rm -f /root/.bash_history";
+        $commands[] = "rm -f /root/.history";
         $commands[] = "history -c && history -w && reboot";
 
-        SSH::into($server->name)->run($commands);
+        try {
+            SSH::into($server->name)->run($commands);
+        }
+        catch(\Exception $e)
+        {
+            // This just happens because of the rebooting probably?
+        }
+
 
         /* Store server as 'configured' */
         $task->server->configured = 1;

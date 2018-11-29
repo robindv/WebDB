@@ -12,6 +12,11 @@ class Group extends Model
         return $this->hasMany('App\Models\Student');
     }
 
+    function is_dummy()
+    {
+        return strstr($this->name, "voorbeeld");
+    }
+
     function project()
     {
         return $this->belongsTo('App\Models\Project');
@@ -28,7 +33,11 @@ class Group extends Model
     }
 
     function getFullnameAttribute() {
-        return env('WEBDB_GROUP_PREFIX') . $this->name;
+
+        if($this->course_id == 1)
+            return "webdb18-".$this->name;
+
+        return str_replace("webai","webai18-",$this->name);
     }
 
     function gitlab_group(\App\Connectors\GitLabConnector $connector)

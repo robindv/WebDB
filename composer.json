@@ -24,7 +24,10 @@
         ],
         "psr-4": {
             "App\\": "app/"
-        }
+        },
+        "files" : [
+            "app/Http/macros.php"
+        ]
     },
     "autoload-dev": {
         "classmap": [

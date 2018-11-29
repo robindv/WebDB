@@ -78,8 +78,8 @@ class GitLabTasks extends Command
 
         foreach($users as $user)
         {
-            $gu = $connector->find_user_by_username($user->uvanetid);
-//            $gu = $connector->find_user_by_string($user->name);
+    //        $gu = $connector->find_user_by_username($user->uvanetid);
+            $gu = $connector->find_user_by_string($user->name);
 
             if($gu == null) {
                 $this->info("No match for ". $user->name ." (".$user->uvanetid.")");
@@ -120,6 +120,9 @@ class GitLabTasks extends Command
 
         foreach($groups as $group)
         {
+            if($group->is_dummy())
+                continue;
+
             $gg = $connector->find_group_by_string($group->fullname);
 
             if($gg == null)

@@ -33,7 +33,7 @@ if($servers)
         echo '<td>'.$server->hostname.'</td>';
         echo '<td>'.$server->ip_address.'</td>';
 
-        if($server->cloudstack_id)
+        if($server->created)
             echo '<td><span class="glyphicon glyphicon-ok"></span>';
         else
             echo '<td><span class="glyphicon glyphicon-remove"></span>';

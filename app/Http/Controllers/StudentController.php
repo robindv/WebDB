@@ -14,7 +14,9 @@ class StudentController extends Controller
 
     function getProject()
     {
-        $data['projects'] = Project::where('advanced',0)->pluck('name','id');
+        $group = Auth::user()->student->group;
+
+        $data['projects'] = Project::where('advanced',0)->where('course_id', $group->course_id)->pluck('name','id');
         $data['deadline'] = strtotime(env("WEBDB_PROJECT_DEADLINE"));
 
         return view('layout')->nest('page','student.project',$data);

@@ -20,13 +20,16 @@ else
     echo '<span class="col-sm-4">'.link_to('http://'.$server->hostname).'</span></div>';
     echo '<div class="row"><span class="col-sm-2" style="text-align:left;font-weight: bold;">IP-adres</span>';
     echo '<span class="col-sm-4">'.$server->ip_address.'</span></div>';
-    echo '<div class="row"><span class="col-sm-2" style="text-align:left;font-weight: bold;">State</span>';
-    echo '<span class="col-sm-4">'.$server->state;
 
-    if($server->state == 'Stopped')
-        echo '&nbsp;('.link_to('student/server-on/'.$server->id,'Aanzetten').')';
+    if($server->provider->type == 'cloudstack') {
+        echo '<div class="row"><span class="col-sm-2" style="text-align:left;font-weight: bold;">State</span>';
+        echo '<span class="col-sm-4">' . $server->state;
 
-    echo '</span></div>';
+        if ($server->state == 'Stopped')
+            echo '&nbsp;(' . link_to('student/server-on/' . $server->id, 'Aanzetten') . ')';
+
+        echo '</span></div>';
+    }
     echo '</div>';
 
     $su = \App\Models\ServerUser::where('server_id',$server->id)->where('created',1)->where('user_id',Auth::id())->first();
@@ -94,5 +97,5 @@ else
     //
     // echo '<br />'.link_to('student/domain-add-modal','Domein toevoegen',['class'=>'btn btn-default','data-toggle'=>'modal','data-target'=>'#modal']);
 
-    echo '<h2>Contact</h2><p>Problemen met je server? Neem contact op met '.link_to('mailto:'.env('WEBDB_ADMIN'),env('WEBDB_ADMIN')).'</p>';
+    echo '<h2>Contact</h2><p>Problemen met je server? Neem contact op met '.link_to('mailto:'.$server->course->admin_email,$server->course->admin_email).'</p>';
 }

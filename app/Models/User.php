@@ -19,6 +19,14 @@ class User extends Model implements Authenticatable
         return 'id';
     }
 
+    public function getCurrentCourseAttribute()
+    {
+        if($this->is_admin && $this->course_id == '')
+            return current_course_id();
+
+        return $this->course_id;
+    }
+
     public function getAuthIdentifier()
     {
         return $this->id;

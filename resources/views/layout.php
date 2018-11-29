@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Webprogrammeren en Databases <?php if(isset($title)) echo ' - '.$title ; ?></title>
+    <title><?php echo current_course()->name; ?> <?php if(isset($title)) echo ' - '.$title ; ?></title>
 
     <!-- Bootstrap -->
     <link href="/css/bootstrap.min.css" rel="stylesheet">
@@ -29,13 +29,13 @@
 
 </head>
 <body>
-<div id="header"><div id="logo"><div>Webprogrammeren en Databases</div></div></div>
+<div id="header"><div id="logo"><div><?php echo current_course()->name; ?></div></div></div>
 <div id="nav">
     <ul id="menu">
         <li><?php echo link_to('/','Home'); ?></li>
         <?php
 
-        if(! Auth::check() || ! Auth::user()->is_admin)
+        if((! Auth::check() || ! Auth::user()->is_admin) && current_course_id() == 1)
             echo '<li>'.link_to('voorbeeldcode','Voorbeeldcode').'</li>';
 
         if (Auth::check())
@@ -57,7 +57,8 @@
             if($user->is_admin)
             {
                 echo '<li>'.link_to('admin/servers','Servers').'</li>';
-                echo '<li>'.link_to('admin/config', 'Configuratie').'</li>';
+                if(current_course_id() == 2)
+                    echo '<li>'.link_to('admin/config', 'Configuratie').'</li>';
             }
 
             echo '<li>'.link_to('profile',$user->firstname).'</li>';

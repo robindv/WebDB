@@ -150,9 +150,9 @@ class GitLabConnector
                  'username' => $user->username,
                  'name' => $user->name,
                  'projects_limit' => 10,
-                 'provider' => 'ivo',
+                 'provider' => 'cas3',
                  'extern_uid' => $user->username,
-                 'confirm' => "false"]
+                 'skip_confirmation' => "true"]
             );
 
             if(isset($result->id))

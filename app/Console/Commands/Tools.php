@@ -49,6 +49,9 @@ class Tools extends Command
             case 'linux-names':
                 $this->linux_names();
                 break;
+            case 'test':
+                $this->test();
+                break;
             case 'linux-users':
                 $this->linux_users();
                 break;
@@ -63,6 +66,44 @@ class Tools extends Command
                 break;
             default:
                 $this->warn("Unknown command ".$command);
+        }
+    }
+
+    function test()
+    {
+
+        foreach(Server::where('course_id',1)->where('id','!=', 99)->where('id','<',250)->get() as $server)
+        {
+            $this->info($server->name);
+
+            $commands[] = "unset HISTFILE";
+
+            if($server->course_id == 2) {
+                $commands[] = "sed -i 's/Webprogrammeren en Databases 2018/Webtechnieken voor KI 2018       /g' /etc/motd";
+                $commands[] = "sed -i 's/webdb-server/webai-server/g' /etc/motd";
+                $commands[] = "sed -i 's/webdb-admin/webai-server/g' /etc/apache2/sites-enabled/*.conf";
+                $commands[] = "sed -i 's/Webprogrammeren en Databases/Webtechnieken voor KI/g' /var/www/html/index.html";
+            }
+            else {
+                $commands[] = "sed -i 's/webdb-admin/webdb-server/g' /etc/apache2/sites-enabled/*.conf";
+                $commands[] = "sed -i 's/20187/2018/g' /var/www/html/index.html";
+            }
+
+
+            $commands[] = "cat /dev/null > /var/log/auth.log";
+            $commands[] = "cat /dev/null > /var/log/syslog";
+            $commands[] = "cat /dev/null > /var/log/apache2/access.log";
+            $commands[] = "cat /dev/null > /var/log/apache2/error.log";
+
+            $commands[] = "rm -f /root/.viminfo";
+            $commands[] = "rm -f /root/.vim/.netrwhist";
+            $commands[] = "rm -f /root/.bash_history";
+            $commands[] = "rm -f /root/.history";
+            $commands[] = "history -c && history -w";
+
+//            dd($commands);
+
+           \SSH::into($server->name)->run($commands);
         }
     }
 

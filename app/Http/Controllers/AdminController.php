@@ -20,7 +20,8 @@ class AdminController extends Controller
 
     function getServers()
     {
-        $data['servers'] = Server::orderBy('name')->with('group')->get();
+        $data['servers'] = Server::orderBy('name')->with('group')->where('course_id', \Auth::user()->current_course)->get();
+
 
         return view('layout')->nest('page','admin.servers',$data);
     }

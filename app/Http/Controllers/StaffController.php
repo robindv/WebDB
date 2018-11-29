@@ -15,7 +15,7 @@ class StaffController extends Controller
 
     function getGroups()
     {
-        $data['groups'] = Group::orderBy('id')->with('students','students.user','project','assistant')->get();
+        $data['groups'] = Group::orderBy('id')->with('students','students.user','project','assistant')->where('course_id', \Auth::user()->current_course)->get();
 
         if(! \Auth::user()->is_teacher)
             $data['groups'] = $data['groups']->where('assistant_id', \Auth::id());
@@ -25,7 +25,7 @@ class StaffController extends Controller
 
     function getGroupsExport()
     {
-        $data['groups'] = Group::orderBy('id')->with('students','students.user','project','assistant')->get();
+        $data['groups'] = Group::orderBy('id')->with('students','students.user','project','assistant')->where('course_id', \Auth::user()->current_course)->get();
         if(! \Auth::user()->is_teacher)
             $data['groups'] = $data['groups']->where('assistant_id', \Auth::id());
 
@@ -36,7 +36,7 @@ class StaffController extends Controller
 
     function getStudents()
     {
-        $data['users'] = User::with('student','student.group')->orderBy('lastname')->get();
+        $data['users'] = User::with('student','student.group')->where('course_id', \Auth::user()->current_course)->orderBy('lastname')->get();
         if(! \Auth::user()->is_teacher)
             $data['users'] = $data['users']->where('student.group.assistant_id', \Auth::id());
 
@@ -79,11 +79,11 @@ class StaffController extends Controller
         $data['group'] = $group;
         $data['assistants'] = [0 => ''];
 
-        $users = User::isAssistant()->orderBy('lastname')->get();
+        $users = User::isAssistant()->where('course_id',$group->course_id)->orderBy('lastname')->get();
         foreach($users as $user)
             $data['assistants'][$user->id] = $user->name;
 
-        $data['projects'] = [0=>'Onbekend'] + Project::orderBy('name')->pluck('name','id')->all();
+        $data['projects'] = [0=>'Onbekend'] + Project::orderBy('name')->where('course_id',$group->course_id)->pluck('name','id')->all();
 
         return $this->modal('Groep bewerken', 'modals.group',$data);
     }

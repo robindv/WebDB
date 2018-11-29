@@ -17,8 +17,11 @@ class SSHServiceProvider extends ServiceProvider
             return;
 
         $connections = [];
-        foreach(\App\Models\Server::whereNotNull('cloudstack_id')->get() as $server)
+        foreach(\App\Models\Server::get() as $server)
         {
+            if(!$server->created)
+                continue;
+
             $connections[$server->name] = ['host'      => $server->ip_address,
                                            'username'  => 'root',
                                            'key'       => env('SSH_KEYPATH'),

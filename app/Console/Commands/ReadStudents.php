@@ -56,7 +56,7 @@ class ReadStudents extends Command
         if(count($header_line) < 6)
             return $this->error("Invalid CSV file (2)");
 
-        $mapping = ['UvAnetID' => -1, 'LastName' => -1, 'MiddleName' => -1, 'FirstName' => -1, 'Email' => -1, 'Programme' => -1, 'Groep' => -1, 'Tutor' => -1];
+        $mapping = ['UvAnetID' => -1, 'LastName' => -1, 'MiddleName' => -1, 'FirstName' => -1, 'Email' => -1, 'Programme' => -1, 'Groep' => -1/*, 'Tutor' => -1*/];
 
         foreach($header_line as $key=>$value)
             if(array_key_exists($value, $mapping))
@@ -94,10 +94,12 @@ class ReadStudents extends Command
                 $this->info('Creating user '.$uvanetid);
             }
 
+
             $user->firstname = $line[$mapping['FirstName']];
             $user->infix     = $line[$mapping['MiddleName']];
             $user->lastname  = $line[$mapping['LastName']];
             $user->email     = $line[$mapping['Email']];
+            $user->course_id = strstr($filename, "webai") ? 2 : 1;
             $user->role     |= User::student_role;
             $user->save();
 
@@ -130,12 +132,12 @@ class ReadStudents extends Command
             if($old_active != $student->active)
                 $this->info("Changing active status of ". $student->user->name);
 
-            /* Tutor */
-            $tutor = User::whereRaw("CONCAT(firstname,' ',TRIM(CONCAT(infix,' ',lastname))) = ?",[$line[$mapping['Tutor']]])->first();
-
-            if($tutor == null)
-                $this->info('Tutor not found: '. $line[$mapping['Tutor']]);
-            $student->tutor_id = $tutor == null ? null : $tutor->id;
+//            /* Tutor */
+//            $tutor = User::whereRaw("CONCAT(firstname,' ',TRIM(CONCAT(infix,' ',lastname))) = ?",[$line[$mapping['Tutor']]])->first();
+//
+//            if($tutor == null)
+//                $this->info('Tutor not found: '. $line[$mapping['Tutor']]);
+//            $student->tutor_id = $tutor == null ? null : $tutor->id;
 
             $student->save();
         }
