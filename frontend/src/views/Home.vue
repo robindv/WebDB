@@ -1,6 +1,7 @@
 <template>
   <div class="home">
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App!"/>
+    <h2>{{ course.name }}</h2>
+    <p>Welkom op de website van het vak {{ course.name }}.</p>
   </div>
 </template>
 
@@ -10,8 +11,12 @@ import HelloWorld from '@/components/HelloWorld.vue'; // @ is an alias to /src
 
 export default Vue.extend({
   name: 'home',
-  components: {
-    HelloWorld,
+
+  computed: {
+    course(): string {
+      return this.$store.state.course;
+    },
   },
+
 });
 </script>
