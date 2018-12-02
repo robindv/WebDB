@@ -9,6 +9,11 @@
     <ul id="menu">
       <li><router-link to="/">Home</router-link></li>
       <li><router-link to="/voorbeeldcode">Voorbeeldcode</router-link></li>
+
+      <template v-if="user.is_teacher">
+        <li><router-link to="/staff/students">Studenten</router-link></li>
+      </template>
+
       <li><router-link to="/login" v-if="!isLoggedIn">Inloggen</router-link></li>
       <li><router-link to="/profile" v-if="isLoggedIn">{{ user.firstname }}</router-link></li>
       <li><router-link to="/logout" v-if="isLoggedIn">Uitloggen</router-link></li>
@@ -41,14 +46,14 @@ export default Vue.extend({
     if (this.$store.state.token) {
       this.$http.defaults.headers.common.Authorization = 'Bearer ' + this.$store.state.token.access_token;
 
-      this.$http.get('api/user')
+      this.$http.get('/api/user')
       .then((response: AxiosResponse) => {
           this.$store.commit('user', response.data);
       });
     }
 
 
-    this.$http.get('api/course')
+    this.$http.get('/api/course')
     .then((response: AxiosResponse) => {
         this.$store.commit('course', response.data);
     });

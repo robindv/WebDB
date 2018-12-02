@@ -5,7 +5,6 @@ import createPersistedState from 'vuex-persistedstate';
 
 Vue.use(Vuex);
 
-
 import _ from 'lodash';
 
 const store = new Vuex.Store({
@@ -51,6 +50,5 @@ const store = new Vuex.Store({
   plugins: [ createPersistedState({paths: ['token'] }) ],
 
 });
-
 
 export default store;
