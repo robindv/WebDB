@@ -11,7 +11,6 @@ Object.defineProperty(Vue.prototype, '$lodash', { value: lodash });
 
 import './assets/main.scss';
 
-
 declare module 'vue/types/vue' {
   interface Vue {
     $http: AxiosStatic;

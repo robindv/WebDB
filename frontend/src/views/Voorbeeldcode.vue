@@ -23,7 +23,11 @@ export default Vue.extend({
       return 'https://' + this.$store.state.course.examples_site;
     },
   },
-
-
 });
 </script>
+
+<style scoped>
+p {
+  margin-bottom: 10px;
+}
+</style>

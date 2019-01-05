@@ -6,6 +6,7 @@
             <tr><th>Naam</th><td>{{ user.name }}</td></tr>
             <tr><th>UvAnetID</th><td>{{ user.uvanetid }}</td></tr>
             <tr><th>E-mailadres</th><td>{{ user.email }}</td></tr>
+            <tr v-if="user.is_student"><th>Opleiding</th><td>{{ user.student.programme }}</td></tr>
         </table>
 
         <h2>Mijn wachtwoorden</h2>
@@ -15,9 +16,13 @@
                 <tr><th>Server</th><th>Groep</th><th>Gebruikersnaam</th><th>Wachtwoord</th></tr>
             </thead>
             <tbody>
-                <tr v-for="user in serverusers" :key="user.id">
+            <tr v-if="serverusers == null"><td colspan="6"><div class="element is-loading" style="height: 75px"></div></td></tr>
+            <tr v-if="serverusers != null && serverusers.length == 0"><td colspan="6">Er zijn nog geen gebruikersaccounts voor je beschikbaar.</td></tr>
+
+
+            <tr v-for="user in serverusers" :key="user.id">
                     <td>{{ user.server.hostname }}</td>
-                    <td>{{ user.server.group.name || "-" }}</td>
+                    <td>{{ user.server.group == null ? "-" : user.server.group.name }}</td>
                     <td>{{ user.username }}</td>
                     <td>{{ user.password }}</td>
                 </tr>
@@ -45,7 +50,7 @@ export default Vue.extend({
     },
 
     mounted() {
-      this.$http.get('api/user/serverusers')
+      this.$http.get('/api/user/serverusers')
       .then((response: AxiosResponse) => {
           this.serverusers = response.data;
       });
@@ -66,6 +71,4 @@ export default Vue.extend({
         padding-bottom: 0;
     }
 }
-
-
 </style>

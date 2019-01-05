@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <h2>{{ course.name }}</h2>
+    <h2>{{ course.name }} 2019</h2>
     <p>Welkom op de website van het vak {{ course.name }}.</p>
   </div>
 </template>

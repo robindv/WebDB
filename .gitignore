@@ -1,3 +1,4 @@
+phpMyAdmin
 .vagrant
 .idea
 .Trash-1000
@@ -7,3 +8,10 @@ Homestead.yaml
 Homestead.json
 .env
 storage/webdb.key
+storage/oauth-private.key
+storage/oauth-public.key
+public/css/*
+public/fonts/*
+public/img/*
+public/js/*
+resources/views/index.blade.php

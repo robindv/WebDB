@@ -11,7 +11,6 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'home',
       component: Home,
     },
     {
@@ -23,16 +22,15 @@ export default new Router({
       component: () => import(/* webpackChunkName: "about" */ './views/Voorbeeldcode.vue'),
     },
     {
-      path: '/login',
-      beforeEnter(to, from, next) {
-        const callbackUrl = window.origin + '/login_callback';
-        window.location.href = 'https://secure.uva.nl/cas/login?service=' + callbackUrl;
-      },
-    },
-    {
       path: '/login_callback',
       name: 'login_callback',
       component: () => import('./views/LoginCallback.vue'),
+    },
+
+    {
+      path: '/logout',
+      name: 'logout',
+      component: () => import('./views/Logout.vue'),
     },
 
     {
@@ -42,9 +40,39 @@ export default new Router({
     },
 
     {
+      path: '/student/project',
+      name: 'Project',
+      component: () => import('./views/student/Project.vue'),
+    },
+
+    {
+      path: '/student/server',
+      name: 'StudentServer',
+      component: () => import('./views/student/Server.vue'),
+    },
+
+    {
       path: '/staff/students',
       name: 'Students',
       component: () => import('./views/staff/Students.vue'),
+    },
+
+    {
+      path: '/staff/groups',
+      name: 'Groups',
+      component: () => import('./views/staff/Groups.vue'),
+    },
+
+    {
+      path: '/admin/servers',
+      name: 'Servers',
+      component: () => import('./views/admin/Servers.vue'),
+    },
+
+    {
+      path: '/admin/servers/:id',
+      name: 'AdminServer',
+      component: () => import('./views/admin/Server.vue'),
     },
 
   ],

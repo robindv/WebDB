@@ -1,5 +1,24 @@
 @charset "utf-8";
 @import '~bulma/bulma';
+@import '~@fortawesome/fontawesome-free/css/all.css';
+
+
+.element {
+    &.is-loading {
+        position: relative;
+        pointer-events: none;
+        opacity: 0.5;
+        &:after {
+            @include loader;
+            position: absolute;
+            top: calc(50% - 2.5em);
+            left: calc(50% - 2.5em);
+            width: 5em;
+            height: 5em;
+            border-width: 0.25em;
+        }
+    }
+}
 
 html {
     overflow-x: unset;
@@ -99,4 +118,14 @@ h2 {
 #main {
     font-family: Arial;
     font-size: 13px;
+}
+
+#main a {
+    color: black;
+    text-decoration: underline;
+}
+
+#main a.fas, #main a.fa {
+    text-decoration: none;
+    color: darkblue;
 }
