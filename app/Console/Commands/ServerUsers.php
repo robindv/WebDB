@@ -63,6 +63,7 @@ class ServerUsers extends Command
             return;
         }
 
+
         $su->password = $this->rand_string(14);
         $su->username = $su->user->linux_name;
 
@@ -70,14 +71,8 @@ class ServerUsers extends Command
         $commands[] = "unset HISTFILE";
         $commands[] = "useradd -g users -G sudo -s /bin/bash -m -p`mkpasswd ".$su->password."` ".$su->username;
 
-        if($su->server->provider->type == 'cloudstack') {
-            $commands[] = 'export mp=`cat /etc/mysql/debian.cnf | grep -m 1 \'password\' | awk -F\'= \' \'{print $2}\'`';
-            $commands[] = 'mysql -u debian-sys-maint -p${mp}' . " mysql -e \"CREATE USER '" . $su->username . "'@'localhost' IDENTIFIED BY '" . $su->password . "'; GRANT ALL PRIVILEGES ON *.* TO '" . $su->username . "'@'localhost' WITH GRANT OPTION; FLUSH PRIVILEGES\"";
-        }
-        else
-        {
-            $commands[] = 'mysql -u root' . " mysql -e \"CREATE USER '" . $su->username . "'@'localhost' IDENTIFIED BY '" . $su->password . "'; GRANT ALL PRIVILEGES ON *.* TO '" . $su->username . "'@'localhost' WITH GRANT OPTION; FLUSH PRIVILEGES\"";
-        }
+
+        $commands[] = 'mysql -u root -p'. $su->server->mysql_password . " mysql -e \"CREATE USER '" . $su->username . "'@'localhost' IDENTIFIED BY '" . $su->password . "'; GRANT ALL PRIVILEGES ON *.* TO '" . $su->username . "'@'localhost' WITH GRANT OPTION; FLUSH PRIVILEGES\"";
 
         $commands[] = "mkdir /home/".$su->username."/public_html";
         $commands[] = "chmod +x /home/".$su->username."/public_html";
