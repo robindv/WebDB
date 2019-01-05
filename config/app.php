@@ -28,6 +28,27 @@ return [
 
     'debug' => env('APP_DEBUG', false),
 
+    'debug_blacklist' => [
+        '_ENV' => [
+            'APP_KEY',
+            'DB_PASSWORD',
+            'GITLAB_APIURL',
+            'GITLAB_PRIVATETOKEN',
+            'SSH_KEYPATH',
+            'SSH_PASSPHRASE',
+            'WEBDB_MYSQL_PASS_SECRET',
+        ],
+        '_SERVER' => [
+            'APP_KEY',
+            'DB_PASSWORD',
+            'GITLAB_APIURL',
+            'GITLAB_PRIVATETOKEN',
+            'SSH_KEYPATH',
+            'SSH_PASSPHRASE',
+            'WEBDB_MYSQL_PASS_SECRET',
+        ],
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Application URL
