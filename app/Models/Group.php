@@ -3,10 +3,29 @@
 namespace App\Models;
 
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 class Group extends Model
 {
+    protected $appends = ['students_can_edit_project'];
+
+    function getStudentsCanEditProjectAttribute()
+    {
+        if($this->project == null)
+            return true;
+
+        if($this->project->advanced)
+            return false;
+
+        return $this->course->project_deadline->gt(Carbon::now());
+    }
+
+    function course()
+    {
+        return $this->belongsTo(Course::class);
+    }
+
     function students()
     {
         return $this->hasMany('App\Models\Student');

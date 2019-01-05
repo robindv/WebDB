@@ -8,6 +8,11 @@ class ServerUser extends Model
 {
     public static $states = ['In wachtrij', 'Aangemaakt', 'In wachtrij voor verwijderen', "Verwijderd"];
 
+    function getStateAttribute()
+    {
+        return self::$states[$this->created];
+    }
+
     function server()
     {
         return $this->belongsTo('App\Models\Server');

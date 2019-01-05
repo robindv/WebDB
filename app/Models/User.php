@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class User extends Model implements Authenticatable
 {
+    use \Laravel\Passport\HasApiTokens;
+
+    protected $appends = ['name','is_student','is_teacher','is_admin', 'is_assistant'];
 
     const student_role   = 1;
     const assistant_role = 2;
@@ -54,22 +57,22 @@ class User extends Model implements Authenticatable
 
     public function getIsAdminAttribute()
     {
-        return $this->role & self::admin_role;
+        return ($this->role & self::admin_role) > 0;
     }
 
     public function getIsAssistantAttribute()
     {
-        return $this->role & self::assistant_role;
+        return ($this->role & self::assistant_role) > 0;
     }
 
     public function getIsTeacherAttribute()
     {
-        return $this->role & self::teacher_role;
+        return ($this->role & self::teacher_role) > 0;
     }
 
     public function getIsStudentAttribute()
     {
-        return $this->role & self::student_role;
+        return ($this->role & self::student_role) > 0;
     }
 
     public function is_student()
@@ -98,5 +101,10 @@ class User extends Model implements Authenticatable
             return null;
 
         return $connector->find_user_by_id($this->gitlab_user_id);
+    }
+
+    public function server_users()
+    {
+        return $this->hasMany(ServerUser::class);
     }
 }

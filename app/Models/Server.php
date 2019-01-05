@@ -8,6 +8,7 @@ use Carbon\Carbon;
 class Server extends \Eloquent
 {
     public $dates = ['ssl_valid_from', 'ssl_valid_to'];
+    protected $appends = ['hostname'];
 
     function group()
     {
@@ -86,7 +87,12 @@ class Server extends \Eloquent
 
     function getCreatedAttribute()
     {
-        return $this->cloudstack_id != null || $this->provider->type == 'openstack';
+        return $this->ip_address != '';
+    }
+
+    function getMysqlPasswordAttribute()
+    {
+        return substr(hash("sha512",env("WEBDB_MYSQL_PASS_SECRET")."-".$this->hostname), 0, 25);
     }
 
     function deploy()
