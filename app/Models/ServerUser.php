@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class ServerUser extends Model
 {
     public static $states = ['In wachtrij', 'Aangemaakt', 'In wachtrij voor verwijderen', "Verwijderd"];
+    public $appends = ['state'];
 
     function getStateAttribute()
     {
