@@ -29,8 +29,11 @@ class ServersController
         if(!$request->user()->is_admin)
             return response( ['error' => "Verboden toegang"], 403);
 
-        $server = $server->load('users')
-               ->setVisible(['id','name','hostname','ip_address', 'state', 'group.name','ssl_issuer','ssl_valid_from','ssl_valid_to','users']);
+        $server = $server->load('users')->load('group')
+               ->setVisible(['id','name','hostname','ip_address', 'state', 'group','ssl_issuer','ssl_valid_from','ssl_valid_to','users']);
+
+        if($server->group != null)
+            $server->group->setVisible(['name']);
 
         $server->users->map(function($user) {
             $user->user->setVisible(['name','uvanetid']);

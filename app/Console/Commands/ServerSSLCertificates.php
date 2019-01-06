@@ -38,7 +38,7 @@ class ServerSSLCertificates extends Command
      */
     public function handle()
     {
-        Server::whereNotNull('cloudstack_id')->where('state','running')->get()->each( function($server) {
+        Server::where('configured',1)->get()->each( function($server) {
             $server->refresh_ssl_info();
         });
 
