@@ -22,6 +22,11 @@ export default new Router({
       component: () => import(/* webpackChunkName: "about" */ './views/Voorbeeldcode.vue'),
     },
     {
+      path: '/handleiding',
+      name: 'handleiding',
+      component: () => import('./views/Handleiding.vue'),
+    },
+    {
       path: '/login_callback',
       name: 'login_callback',
       component: () => import('./views/LoginCallback.vue'),
