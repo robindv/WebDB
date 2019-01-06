@@ -123,11 +123,11 @@ class GitLabTasks extends Command
             if($group->is_dummy())
                 continue;
 
-            $gg = $connector->find_group_by_string($group->fullname);
+            $gg = $connector->find_group_by_string($group->name);
 
             if($gg == null)
             {
-                $this->info("No match for ". $group->fullname);
+                $this->info("No match for ". $group->name);
 
                 $gg = $group->create_gitlab_group($connector);
                 $this->info("Created a new group with id ".$gg->id);
