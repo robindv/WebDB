@@ -50,12 +50,16 @@ class StudentsController
         ]);
 
         $student = \App\Models\Student::find($body->id);
+
         $student->remark = $body->remark;
-        $student->programme = $body->programme;
-        $student->active = $body->active;
-        $student->group_id = $body->group_id;
-        $student->user->email = $body->user->email;
-        $student->user->save();
+
+        if($user->is_teacher) {
+            $student->programme = $body->programme;
+            $student->active = $body->active;
+            $student->group_id = $body->group_id;
+            $student->user->email = $body->user->email;
+            $student->user->save();
+        }
         $student->save();
 
         return $student;

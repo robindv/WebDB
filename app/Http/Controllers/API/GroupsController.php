@@ -100,9 +100,13 @@ class GroupsController
         ]);
 
         $group = \App\Models\Group::find($body->id);
+
+        if($user->is_teacher) {
+            $group->name = $body->name;
+            $group->assistant_id = $body->assistant_id;
+        }
         $group->remark = $body->remark;
         $group->project_id = $body->project_id;
-        $group->assistant_id = $body->assistant_id;
 
         $group->save();
 

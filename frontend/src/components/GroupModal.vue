@@ -7,8 +7,9 @@
 
         <template slot="body">
             
-            <HorizontalFormElement title="Naam">
-                <TextElement v-model="target.name" />
+            <HorizontalFormElement title="Naam" >
+                <TextElement v-model="target.name" v-if="user.is_teacher" />
+                <div class="input is-static is-small" v-else>{{ target.name }}</div>
             </HorizontalFormElement>
 
             <HorizontalFormElement title="Project">
@@ -16,7 +17,8 @@
             </HorizontalFormElement>
 
             <HorizontalFormElement title="Assistent">
-                <SelectElement :options="assistants" v-model="target.assistant_id" />
+                <SelectElement :options="assistants" v-model="target.assistant_id" v-if="user.is_teacher" />
+                <div class="input is-static is-small" v-else>{{ target.assistant.name }}</div>
             </HorizontalFormElement>
 
             <HorizontalFormElement title="Opmerkingen">
@@ -34,6 +36,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
+import { mapGetters } from 'vuex';
 import { AxiosResponse, AxiosError } from 'axios';
 import Modal from '@/components/Modal.vue';
 import TextElement from '@/components/TextElement.vue';
@@ -52,6 +55,11 @@ export default Vue.extend({
         HorizontalFormElement,
     },
     props: ['element'],
+
+    computed: {
+        ...mapGetters(['user']),
+    },
+
 
     data() {
         return {

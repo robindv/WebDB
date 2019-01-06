@@ -12,19 +12,23 @@
             </HorizontalFormElement>
 
             <HorizontalFormElement title="E-mailadres" :errors="errors['user.email']">
-                <TextElement v-model="target.user.email" :errors="errors['user.email']" />
+                <TextElement v-model="target.user.email" :errors="errors['user.email']" v-if="user.is_teacher" />
+                <div class="input is-static is-small" v-else>{{ target.user.email }}</div>
             </HorizontalFormElement>
 
             <HorizontalFormElement title="Opleiding" :errors="errors['programme']">
-                <TextElement v-model="target.programme" :errors="errors['programme']" />
+                <TextElement v-model="target.programme" :errors="errors['programme']"  v-if="user.is_teacher" />
+                <div class="input is-static is-small" v-else>{{ target.programme }}</div>
             </HorizontalFormElement>
 
             <HorizontalFormElement title="Actief">
-                <SelectElement :options="active" v-model="target.active" />
+                <SelectElement :options="active" v-model="target.active"  v-if="user.is_teacher"  />
+                <div class="input is-static is-small" v-else>{{ target.active ? "Ja" : "Nee" }}</div>
             </HorizontalFormElement>
 
             <HorizontalFormElement title="Groep">
-                <SelectElement :options="groups" v-model="target.group_id" />
+                <SelectElement :options="groups" v-model="target.group_id"  v-if="user.is_teacher" />
+                <div class="input is-static is-small" v-else>{{ target.group.name }}</div>
             </HorizontalFormElement>
 
             <HorizontalFormElement title="Opmerkingen" :errors="errors['remark']">
@@ -43,6 +47,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import { AxiosResponse, AxiosError } from 'axios';
+import { mapGetters } from 'vuex';
 import Modal from '@/components/Modal.vue';
 import TextElement from '@/components/TextElement.vue';
 import TextAreaElement from '@/components/TextAreaElement.vue';
@@ -60,6 +65,11 @@ export default Vue.extend({
         HorizontalFormElement,
     },
     props: ['element'],
+
+    computed: {
+        ...mapGetters(['user']),
+    },
+
 
     data() {
         return {
