@@ -40,7 +40,7 @@ class UsersController extends Controller
 
     function getAssistants(Request $request)
     {
-        if(! $request->user->is_teacher && ! $request->user->is_assistant)
+        if(! $request->user()->is_teacher && ! $request->user()->is_assistant)
             return response(['error' => 'Mag niet'], 403);
 
         return \App\Models\User::isAssistant()->where('course_id',current_course_id())->orderBy('lastname')->get()->map(function ($user) { return $user->makeVisible(['id','name']); });
