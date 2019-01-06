@@ -100,7 +100,7 @@ class ServerUsers extends Command
         $commands = [];
         $commands[] = "unset HISTFILE";
         $commands[] = 'export mp=`cat /etc/mysql/debian.cnf | grep -m 1 \'password\' | awk -F\'= \' \'{print $2}\'`';
-        $commands[] = 'mysql -u debian-sys-maint -p${mp}'." mysql -e \"DROP USER '".$su->username."'@'localhost'; FLUSH PRIVILEGES\"";
+        $commands[] = 'mysql -u root -p'. $su->server->mysql_password . " mysql -e \"DROP USER '".$su->username."'@'localhost'; FLUSH PRIVILEGES\"";
         $commands[] = "deluser --remove-home ".$su->username;
 
         SSH::into($su->server->name)->run($commands);
