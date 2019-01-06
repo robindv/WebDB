@@ -9,9 +9,8 @@
     <ul id="menu">
       <li><router-link to="/">Home</router-link></li>
 
-      <template v-if="!user.is_admin">
-        <li><router-link to="/voorbeeldcode">Voorbeeldcode</router-link></li>
-      </template>
+
+        <li><router-link to="/voorbeeldcode">Handleiding</router-link></li>
 
       <template v-if="user.is_teacher || user.is_assistant">
         <li><router-link to="/staff/students">Studenten</router-link></li>
