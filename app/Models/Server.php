@@ -8,7 +8,7 @@ use Carbon\Carbon;
 class Server extends \Eloquent
 {
     public $dates = ['ssl_valid_from', 'ssl_valid_to'];
-    protected $appends = ['hostname'];
+    protected $appends = ['created', 'hostname'];
 
     function group()
     {
