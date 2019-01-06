@@ -67,22 +67,7 @@ class Server extends \Eloquent
 
     function getHostnameAttribute()
     {
-        if($this->provider->type == 'openstack')
-            return $this->name . ".". $this->provider->hostname_suffix;
-
-        $c = Course::where('examples_site_ip',$this->ip_address)->first();
-        if($c != null)
-            return $c->examples_site;
-
-
-        if($this->ip_address == env("WEBDB_EXAMPLES_IP"))
-            return env('WEBDB_EXAMPLES');
-
-        $ip = explode(".", $this->ip_address);
-        if(count($ip) != 4)
-            return "";
-
-        return str_replace("XXX", sprintf("%03d",$ip[3]), env('WEBDB_VM_DOMAINS'));
+        return $this->name . ".". $this->provider->hostname_suffix;
     }
 
     function getCreatedAttribute()
