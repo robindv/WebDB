@@ -49,9 +49,6 @@ class Tools extends Command
             case 'linux-names':
                 $this->linux_names();
                 break;
-            case 'test':
-                $this->test();
-                break;
             case 'linux-users':
                 $this->linux_users();
                 break;
@@ -61,87 +58,11 @@ class Tools extends Command
             case "cleanup":
                 $this->cleanup();
                 break;
-            case "enable-ftp":
-                $this->enable_ftp();
-                break;
             default:
                 $this->warn("Unknown command ".$command);
         }
     }
 
-    function test()
-    {
-
-        foreach(Server::where('course_id',1)->where('id','!=', 99)->where('id','<',250)->get() as $server)
-        {
-            $this->info($server->name);
-
-            $commands[] = "unset HISTFILE";
-
-            if($server->course_id == 2) {
-                $commands[] = "sed -i 's/Webprogrammeren en Databases 2018/Webtechnieken voor KI 2018       /g' /etc/motd";
-                $commands[] = "sed -i 's/webdb-server/webai-server/g' /etc/motd";
-                $commands[] = "sed -i 's/webdb-admin/webai-server/g' /etc/apache2/sites-enabled/*.conf";
-                $commands[] = "sed -i 's/Webprogrammeren en Databases/Webtechnieken voor KI/g' /var/www/html/index.html";
-            }
-            else {
-                $commands[] = "sed -i 's/webdb-admin/webdb-server/g' /etc/apache2/sites-enabled/*.conf";
-                $commands[] = "sed -i 's/20187/2018/g' /var/www/html/index.html";
-            }
-
-
-            $commands[] = "cat /dev/null > /var/log/auth.log";
-            $commands[] = "cat /dev/null > /var/log/syslog";
-            $commands[] = "cat /dev/null > /var/log/apache2/access.log";
-            $commands[] = "cat /dev/null > /var/log/apache2/error.log";
-
-            $commands[] = "rm -f /root/.viminfo";
-            $commands[] = "rm -f /root/.vim/.netrwhist";
-            $commands[] = "rm -f /root/.bash_history";
-            $commands[] = "rm -f /root/.history";
-            $commands[] = "history -c && history -w";
-
-//            dd($commands);
-
-           \SSH::into($server->name)->run($commands);
-        }
-    }
-
-    function enable_ftp()
-    {
-
-        foreach(Server::where('state', 'running')->where('id',64)->get() as $server)
-        {
-
-            $ftp_configuration = [
-                "# webdb changes",
-                "write_enable=YES",
-                "local_umask=002",
-                "rsa_cert_file=/etc/letsencrypt/live/".$server->hostname."/fullchain.pem",
-                "rsa_private_key_file=/etc/letsencrypt/live/".$server->hostname."/privkey.pem",
-                "ssl_enable=YES",
-                "allow_anon_ssl=NO",
-                "force_local_data_ssl=YES",
-                "force_local_logins_ssl=YES",
-                "ssl_tlsv1=YES",
-                "ssl_sslv2=NO",
-                "ssl_sslv3=NO",
-                "require_ssl_reuse=NO",
-                "ssl_ciphers=HIGH"];
-            $ftp_configuration = implode('\n', $ftp_configuration);
-
-
-            $commands = [];
-            $commands[] = "unset HISTFILE";
-            $commands[] = "apt-get install -y vsftpd";
-            $commands[] = 'echo -e "'.$ftp_configuration.'" >> /etc/vsftpd.conf';
-            $commands[] = "systemctl restart vsftpd";
-
-
-            \SSH::into($server->name)->run($commands);
-
-        }
-    }
 
     function linux_users()
     {
