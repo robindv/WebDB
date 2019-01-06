@@ -5,7 +5,10 @@ use Illuminate\Http\Request;
 
 
 Route::get('/login', function(Request $request) {
-   return redirect()->to('https://secure.uva.nl/cas/login?service='.url('/login_callback'));
+    if(env('APP_ENV') == 'local')
+        return redirect()->to(url('/login_callback?ticket=debug'));
+
+    return redirect()->to('https://secure.uva.nl/cas/login?service='.url('/login_callback'));
 });
 Route::get('/course', '\App\Http\Controllers\API\CourseController@getIndex');
 Route::get('/auth', '\App\Http\Controllers\API\AuthController@getIndex');

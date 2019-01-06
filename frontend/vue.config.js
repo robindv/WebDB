@@ -1,7 +1,7 @@
 module.exports = {
     // proxy API requests to Valet during development
     devServer: {
-      proxy: 'webdb.local',
+      proxy: 'http://webdb.local',
     },
   
     // output built static files to Laravel's public dir.
