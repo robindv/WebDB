@@ -26,7 +26,7 @@ class StudentsController
 
         return $query->get()->map(function ($student) {
             if($student->group != null)
-                $student->group->setVisible(['name']);
+                $student->group->setVisible(['name','remark']);
             if($student->user != null)
                 $student->user->setVisible(['uvanetid','name','email']);
 

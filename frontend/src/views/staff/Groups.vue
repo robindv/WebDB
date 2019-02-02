@@ -4,6 +4,8 @@
 
         <component :is="modalType" v-bind:element="modalElement" v-on:close="close()"></component>
 
+        <a v-on:click="csv" class="button is-pulled-right" style="text-decoration: none;">CSV-export</a>
+
         <table class="table is-fullwidth groups-table">
             <thead>
                 <tr align="left">
@@ -47,6 +49,8 @@
 import Vue from 'vue';
 import { AxiosResponse } from 'axios';
 import GroupModal from '@/components/GroupModal.vue';
+import downloadjs from 'downloadjs';
+import Papa from 'papaparse';
 
 export default Vue.extend({
     components: {
@@ -99,6 +103,27 @@ export default Vue.extend({
 
         concat_emails(group: any) {
             return group.students.map((s: any) => s.user.email).join(',');
+        },
+
+
+        csv(event: Event) {
+            event.preventDefault();
+
+            const data = [['Groep', 'Assistent', 'Project', 'Student', 'Opmerkingen']];
+
+            this.groups.forEach((group: any) => {
+                data.push([group.name,
+                           group.assistant == null ? 'Onbekend' : group.assistant.name,
+                           group.project == null ? 'Onbekend' : group.project.name,
+                           '',
+                           group.remark]);
+
+                group.students.forEach((student: any) => {
+                   data.push(['', '', '', student.user.name, student.remark]);
+                });
+            });
+
+            downloadjs(new Blob([Papa.unparse(data)]), 'groepen.csv', 'text/csv');
         },
     },
 

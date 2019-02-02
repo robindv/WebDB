@@ -2,6 +2,8 @@
     <div class="students">
         <h2>Studenten</h2>
 
+        <a v-on:click="csv" class="button is-pulled-right" style="text-decoration: none;">CSV-export</a>
+
         <component :is="modalType" v-bind:element="modalElement" v-on:close="close()"></component>
 
         <table class="table is-striped is-fullwidth">
@@ -17,7 +19,7 @@
                 </tr>
             </thead>
             <tbody>
-            <tr v-if="students == null"><td colspan="6"><div class="element is-loading" style="height: 75px"></div></td></tr>
+            <tr v-if="students.length == 0"><td colspan="6"><div class="element is-loading" style="height: 75px"></div></td></tr>
 
 
             <tr v-for="student in students" :key="student.id" :id="student.id" v-bind:class="{'target': $route.hash == '#' + student.id }">
@@ -46,6 +48,8 @@
 import Vue from 'vue';
 import { AxiosResponse } from 'axios';
 import StudentModal from '@/components/StudentModal.vue';
+import downloadjs from 'downloadjs';
+import Papa from 'papaparse';
 
 export default Vue.extend({
 
@@ -55,7 +59,7 @@ export default Vue.extend({
 
     data() {
         return {
-            students: null,
+            students: [ ],
             modalType: '',
             modalElement: { },
         };
@@ -89,6 +93,28 @@ export default Vue.extend({
                 this.students = response.data;
             });
         },
+
+        csv(event: Event) {
+            event.preventDefault();
+
+            const data = [['Actief', 'UvAnetID', 'Naam', 'E-mailadres', 'Opleiding',
+                           'Opmerkingen', 'Groep', 'Opmerkingen groep']];
+
+            this.students.forEach((student: any) => {
+                    data.push([
+                        student.active ? 'Ja' : 'Nee',
+                        student.user.uvanetid,
+                        student.user.name,
+                        student.user.email,
+                        student.programme,
+                        student.remark,
+                        student.group == null ? '' : student.group.name,
+                        student.group == null ? '' : student.group.remark]);
+            });
+
+            downloadjs(new Blob([Papa.unparse(data)]), 'studenten.csv', 'text/csv');
+        },
+
     },
 });
 </script>
