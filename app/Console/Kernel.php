@@ -14,8 +14,6 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         Commands\GitLabTasks::class,
-        Commands\ServerStates::class,
-        Commands\ServerTasks::class,
         Commands\ServerUsers::class,
         Commands\ServerSSLCertificates::class,
         Commands\ReadStudents::class,
@@ -31,7 +29,6 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-       // $schedule->command('webdb:states')->everyFiveMinutes()->withoutOverlapping();
-//        $schedule->command('webdb:tasks')->everyMinute()->withoutOverlapping();
+
     }
 }
